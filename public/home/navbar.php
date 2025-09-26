@@ -15,19 +15,19 @@
 
             <div class="collapse navbar-collapse" id="navbarMain">
                 <ul class="navbar-nav ms-auto me-5 mb-2 mb-lg-0">
-                    <li class="nav-item dropdown ">
+                    <li class="nav-item dropdown bordas">
                         <a class="nav-link dropdown-toggle fs-5" href="#" id="menuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Menu
                         </a>
-                        <ul class="dropdown-menu" aria-labelledby="menuLink">
-                            <li><a class="dropdown-item" href="#">Terror</a></li>
-                            <li><a class="dropdown-item" href="#">Mistério</a></li>
-                            <li><a class="dropdown-item" href="#">Infantil</a></li>
-                            <li><a class="dropdown-item" href="#">Documentário</a></li>
-                            <li><a class="dropdown-item" href="#">Romance</a></li>
+                        <ul class="dropdown-menu bg-cinza" aria-labelledby="menuLink">
+                            <li><a class="dropdown-item bg-cinza" href="#">Terror</a></li>
+                            <li><a class="dropdown-item bg-cinza" href="#">Mistério</a></li>
+                            <li><a class="dropdown-item bg-cinza" href="#">Infantil</a></li>
+                            <li><a class="dropdown-item bg-cinza" href="#">Documentário</a></li>
+                            <li><a class="dropdown-item bg-cinza" href="#">Romance</a></li>
 
                             <li class="nav-item">
-                                <a class="dropdown-item" href="/login/main.php" style="color: red;">
+                                <a class="dropdown-item bg-cinza" href="/login/main.php" style="color: red;">
                                 Sair
                                 <i class="bi bi-box-arrow-right"></i> 
                                 </a>

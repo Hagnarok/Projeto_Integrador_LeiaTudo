@@ -109,7 +109,14 @@
     color: #000000;
 }
 
+.bg-cinza {
+    background-color: #9d9ea06e !important; /* Um tom claro de cinza */
+}
 
+.bordas {
+    border: 4px solid #000; /* 4px de espessura, estilo sólido, cor preta */
+    border-radius: 15px;
+}
 /*---------------------------------------------*/
 
 /*Livros da Home*/
