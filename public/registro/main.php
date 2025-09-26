@@ -1,4 +1,3 @@
-git pull origin main
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -24,3 +23,5 @@ git pull origin main
     </div>
 </body>
 </html>
+=======
+>>>>>>> 2fbd960 (salvando minhas alterações)
