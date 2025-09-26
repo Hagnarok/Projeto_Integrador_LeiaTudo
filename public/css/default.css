@@ -1,7 +1,7 @@
 /*Pagina inicial*/
 .home-body{
     font-family: sans-serif;
-    background-color: rgb(255, 255, 255);
+    background-color: rgb(228, 0, 0);
 }
 .dropdown-menu {
     background-color: white;
@@ -68,9 +68,25 @@
 /*Login Tela*/
 .home-login{
     font-family: sans-serif;
-    background-color: rgb(255, 255, 255);
+    background-color: rgb(129, 61, 61);
 }
 .form-label {
   width: 150px;   /* ajuste como quiser */
   display: inline-block; /* precisa disso pra respeitar a largura */
+}
+/* Inputs personalizados */
+.form-control {
+    background-color: #e5e5e5;   /* fundo mais escuro */
+    border: 2px solid #6c757d;   /* borda cinza médio */
+    border-radius: 8px;          /* cantos arredondados */
+    color: #000;                 /* texto preto */
+    transition: all 0.2s ease;   /* suaviza as transições */
+}
+
+/* Quando o usuário clicar no input */
+.form-control:focus {
+    background-color: #d9d9d9;   /* ainda mais escuro */
+    border: 2px solid #0d6efd;   /* azul padrão bootstrap */
+    box-shadow: 0 0 6px rgba(13, 110, 253, 0.4);
+    outline: none; /* tira a borda de foco padrão */
 }
