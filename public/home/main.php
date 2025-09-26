@@ -1,47 +1,150 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>LeiaTudo - Home</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <head>
+        <meta charset="UTF-8">
+        <title>LeiaTudo - Home</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="/css/default.css?v=1" rel="stylesheet">
 
-
-</head>
-<body class="home-body">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">
-                <img src="/css/imgs/logo.png" alt="Ícone" width="64" height="64">
-                LeiaTudo
-            </a>
-
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="navbarMain">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Home Page</a>
-                    </li>
-
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="menuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Menu
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="menuLink">
-                            <li><a class="dropdown-item" href="#">Hamburger</a></li>
-                            <li><a class="dropdown-item" href="#">Pizza</a></li>
-                            <li><a class="dropdown-item" href="#">Hot-Dog</a></li>
-                            <li><a class="dropdown-item" href="#">Snacks</a></li>
-                            <li><a class="dropdown-item" href="#">Batata Recheada</a></li>
-                        </ul>
-                    </li>
-                </ul>
+    </head>
+    <body class="home-body text-center">
+        <?php include 'navbar.php'; ?>
+        <div class="container mt-5">
+            <div class="row mb-3">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 mb-3">
+                    <div class="image-card text-center">
+                        <img src="/css/imgs/imagem1.png" class="img-fluid" alt="Imagem 1">
+                        <div class="image-text">Pequeno Príncipe</div>
+                        <div class="image-text">R$ 40,00</div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 mb-3">
+                    <div class="image-card text-center">
+                        <img src="/css/imgs/imagem1.png" class="img-fluid" alt="Imagem 2">
+                        <div class="image-text">Pequeno Príncipe</div>
+                        <div class="image-text">R$ 40,00</div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 mb-3">
+                    <div class="image-card text-center">
+                        <img src="/css/imgs/imagem1.png" class="img-fluid" alt="Imagem 1">
+                        <div class="image-text">Pequeno Príncipe</div>
+                        <div class="image-text">R$ 40,00</div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 mb-3">
+                    <div class="image-card text-center">
+                        <img src="/css/imgs/imagem1.png" class="img-fluid" alt="Imagem 2">
+                        <div class="image-text">Pequeno Príncipe</div>
+                        <div class="image-text">R$ 40,00</div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 mb-3">
+                    <div class="image-card text-center">
+                        <img src="/css/imgs/imagem1.png" class="img-fluid" alt="Imagem 1">
+                        <div class="image-text">Pequeno Príncipe</div>
+                        <div class="image-text">R$ 40,00</div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 mb-3">
+                    <div class="image-card text-center">
+                        <img src="/css/imgs/imagem1.png" class="img-fluid" alt="Imagem 1">
+                        <div class="image-text">Pequeno Príncipe</div>
+                        <div class="image-text">R$ 40,00</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 mb-3">
+                    <div class="image-card text-center">
+                        <img src="/css/imgs/imagem1.png" class="img-fluid" alt="Imagem 1">
+                        <div class="image-text">Pequeno Príncipe</div>
+                        <div class="image-text">R$ 40,00</div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 mb-3">
+                    <div class="image-card text-center">
+                        <img src="/css/imgs/imagem1.png" class="img-fluid" alt="Imagem 1">
+                        <div class="image-text">Pequeno Príncipe</div>
+                        <div class="image-text">R$ 40,00</div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 mb-3">
+                    <div class="image-card text-center">
+                        <img src="/css/imgs/imagem1.png" class="img-fluid" alt="Imagem 2">
+                        <div class="image-text">Pequeno Príncipe</div>
+                        <div class="image-text">R$ 40,00</div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 mb-3">
+                    <div class="image-card text-center">
+                        <img src="/css/imgs/imagem1.png" class="img-fluid" alt="Imagem 1">
+                        <div class="image-text">Pequeno Príncipe</div>
+                        <div class="image-text">R$ 40,00</div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 mb-3">
+                    <div class="image-card text-center">
+                        <img src="/css/imgs/imagem1.png" class="img-fluid" alt="Imagem 2">
+                        <div class="image-text">Pequeno Príncipe</div>
+                        <div class="image-text">R$ 40,00</div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 mb-3">
+                    <div class="image-card text-center">
+                        <img src="/css/imgs/imagem1.png" class="img-fluid" alt="Imagem 1">
+                        <div class="image-text">Pequeno Príncipe</div>
+                        <div class="image-text">R$ 40,00</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 mb-3">
+                    <div class="image-card text-center">
+                        <img src="/css/imgs/imagem1.png" class="img-fluid" alt="Imagem 1">
+                        <div class="image-text">Pequeno Príncipe</div>
+                        <div class="image-text">R$ 40,00</div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 mb-3">
+                    <div class="image-card text-center">
+                        <img src="/css/imgs/imagem1.png" class="img-fluid" alt="Imagem 1">
+                        <div class="image-text">Pequeno Príncipe</div>
+                        <div class="image-text">R$ 40,00</div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 mb-3">
+                    <div class="image-card text-center">
+                        <img src="/css/imgs/imagem1.png" class="img-fluid" alt="Imagem 2">
+                        <div class="image-text">Pequeno Príncipe</div>
+                        <div class="image-text">R$ 40,00</div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 mb-3">
+                    <div class="image-card text-center">
+                        <img src="/css/imgs/imagem1.png" class="img-fluid" alt="Imagem 1">
+                        <div class="image-text">Pequeno Príncipe</div>
+                        <div class="image-text">R$ 40,00</div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 mb-3">
+                    <div class="image-card text-center">
+                        <img src="/css/imgs/imagem1.png" class="img-fluid" alt="Imagem 2">
+                        <div class="image-text">Pequeno Príncipe</div>
+                        <div class="image-text">R$ 40,00</div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 mb-3">
+                    <div class="image-card text-center">
+                        <img src="/css/imgs/imagem1.png" class="img-fluid" alt="Imagem 1">
+                        <div class="image-text">Pequeno Príncipe</div>
+                        <div class="image-text">R$ 40,00</div>
+                    </div>
+                </div>
             </div>
         </div>
-    </nav>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+        
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
 </html>

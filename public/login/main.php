@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Login - LeiaTudo</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/css/default.css" rel="stylesheet">
+    <link href="/css/default.css?v=1" rel="stylesheet">
 
 </head>
 <body class="home-login">
@@ -33,11 +33,14 @@
             </div>
 
             <div class="d-flex justify-content-center gap-3">
-            <button type="submit" class="btn btn-primary btn-lg w-25">Entrar</button>
-            <button type="button" class="btn btn-secondary btn-lg w-25">Cadastrar-se</button>
+                <button type="submit" class="btn btn-primary btn-lg w-25">Entrar</button>
+                <form action="/registro/main.php" method="GET">
+                    <button type="submit" class="btn btn-secondary btn-lg w-25">Cadastrar-se</button>
+                </form>
             </div>
                 
         </form>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 /*Pagina inicial*/
 .home-body{
-    font-family: sans-serif;
-    background-color: rgb(228, 0, 0);
+    font-family: 'Times New Roman';
+    background-color: white;
 }
 .dropdown-menu {
     background-color: white;
@@ -67,14 +67,14 @@
 
 /*Login Tela*/
 .home-login{
-    font-family: sans-serif;
-    background-color: rgb(129, 61, 61);
+    font-family: 'Times New Roman';
+    background-color: white;
 }
 .form-label {
-  width: 150px;   /* ajuste como quiser */
-  display: inline-block; /* precisa disso pra respeitar a largura */
+  width: 150px;   
+  display: inline-block; 
 }
-/* Inputs personalizados */
+
 .form-control {
     background-color: #e5e5e5;   /* fundo mais escuro */
     border: 2px solid #6c757d;   /* borda cinza médio */
@@ -83,10 +83,47 @@
     transition: all 0.2s ease;   /* suaviza as transições */
 }
 
-/* Quando o usuário clicar no input */
+
 .form-control:focus {
     background-color: #d9d9d9;   /* ainda mais escuro */
     border: 2px solid #0d6efd;   /* azul padrão bootstrap */
     box-shadow: 0 0 6px rgba(13, 110, 253, 0.4);
     outline: none; /* tira a borda de foco padrão */
+}
+
+/*---------------------------------------------*/
+
+/*Nav Tela*/
+
+.navbar-custom {
+    background-color: #ffffff;
+    border-bottom: 4px solid #7e7e7e; /* cor e espessura da linha */
+}
+
+.navbar-custom .nav-link,
+.navbar-custom .navbar-brand {
+    color: #000000; /* texto branco */
+}
+
+.navbar-custom .nav-link:hover {
+    color: #000000;
+}
+
+
+/*---------------------------------------------*/
+
+/*Livros da Home*/
+
+.image-card {
+    background-color: rgba(27, 95, 243, 0.76); /* fundo semitransparente */
+    padding: 10px;
+    border-radius: 8px;
+    position: relative;
+}
+
+.image-text {
+    margin-top: 8px;
+    font-weight: bold;
+    color: #333;
+    font-size: 14px;
 }
