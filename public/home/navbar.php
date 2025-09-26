@@ -1,4 +1,7 @@
 <body class="home-nav">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/default.css?v=2">
     <nav class="navbar navbar-expand-lg navbar-custom shadow-sm">
         <div class="container-fluid">
             <a class="navbar-brand d-flex align-items-center gap-2" href="#">
@@ -17,11 +20,29 @@
                             <i class="bi bi-list"></i> Menu
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end animated-dropdown" aria-labelledby="menuLink">
-                            <li><a class="dropdown-item" href="#">Terror</a></li>
-                            <li><a class="dropdown-item" href="#">Mistério</a></li>
-                            <li><a class="dropdown-item" href="#">Infantil</a></li>
-                            <li><a class="dropdown-item" href="#">Documentário</a></li>
-                            <li><a class="dropdown-item" href="#">Romance</a></li>
+                            <li><a class="dropdown-text px-3" >Funções:</a></li>
+                            <li>
+                                <a class="dropdown-item" href="/cadastro/main.php">
+                                    <i class="bi bi-plus-circle me-1"></i> Cadastrar E-book
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <i class="bi bi-wallet2 me-1"></i> Carteira
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <i class="bi bi-book me-1"></i>Minha biblioteca
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-text px-3">Gêneros:</a></li>
+                            <li><a class="dropdown-item" href="#sec-terror">Terror</a></li>
+                            <li><a class="dropdown-item" href="#sec-misterio">Mistério</a></li>
+                            <li><a class="dropdown-item" href="#sec-infantik">Infantil</a></li>
+                            <li><a class="dropdown-item" href="#sec-documentario">Documentário</a></li>
+                            <li><a class="dropdown-item" href="#sec-romance">Romance</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <a class="dropdown-item text-danger fw-bold" href="/login/main.php">
