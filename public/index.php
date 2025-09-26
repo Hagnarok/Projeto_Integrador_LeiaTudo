@@ -8,7 +8,7 @@
             <link href="/css/default.css" rel="stylesheet" />
         </head>
         <body class="home-body">
-            <?php include 'login/main.php'; ?>
+            <?php include 'registro/main.php'; ?>
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
         </body>
 
