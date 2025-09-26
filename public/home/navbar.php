@@ -1,35 +1,31 @@
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="/css/default.css?v=1" rel="stylesheet">
 <body class="home-nav">
-    <nav class="navbar navbar-expand-lg navbar-custom">
+    <nav class="navbar navbar-expand-lg navbar-custom shadow-sm">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">
-                <img src="/css/imgs/logo.png" alt="Ícone" width="80" height="80">
-                LeiaTudo
+            <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+                <img src="/css/imgs/logo.png" alt="Ícone" width="50" height="50" class="rounded-circle">
+                <span class="fs-4 fw-bold">LeiaTudo</span>
             </a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-            <div class="collapse navbar-collapse" id="navbarMain">
-                <ul class="navbar-nav ms-auto me-5 mb-2 mb-lg-0">
-                    <li class="nav-item dropdown bordas">
-                        <a class="nav-link dropdown-toggle fs-5" href="#" id="menuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Menu
+            <div class="collapse navbar-collapse justify-content-end" id="navbarMain">
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle fs-5 px-3" href="#" id="menuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-list"></i> Menu
                         </a>
-                        <ul class="dropdown-menu bg-cinza" aria-labelledby="menuLink">
-                            <li><a class="dropdown-item bg-cinza" href="#">Terror</a></li>
-                            <li><a class="dropdown-item bg-cinza" href="#">Mistério</a></li>
-                            <li><a class="dropdown-item bg-cinza" href="#">Infantil</a></li>
-                            <li><a class="dropdown-item bg-cinza" href="#">Documentário</a></li>
-                            <li><a class="dropdown-item bg-cinza" href="#">Romance</a></li>
-
-                            <li class="nav-item">
-                                <a class="dropdown-item bg-cinza" href="/login/main.php" style="color: red;">
-                                Sair
-                                <i class="bi bi-box-arrow-right"></i> 
+                        <ul class="dropdown-menu dropdown-menu-end animated-dropdown" aria-labelledby="menuLink">
+                            <li><a class="dropdown-item" href="#">Terror</a></li>
+                            <li><a class="dropdown-item" href="#">Mistério</a></li>
+                            <li><a class="dropdown-item" href="#">Infantil</a></li>
+                            <li><a class="dropdown-item" href="#">Documentário</a></li>
+                            <li><a class="dropdown-item" href="#">Romance</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item text-danger fw-bold" href="/login/main.php">
+                                    <i class="bi bi-box-arrow-right me-1"></i> Sair
                                 </a>
                             </li>
                         </ul>

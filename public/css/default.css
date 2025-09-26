@@ -1,12 +1,74 @@
 /*Pagina inicial*/
 .home-body{
     font-family: 'Times New Roman';
-    background-color: white;
+    background-color: rgb(255, 255, 255);
 }
+/* Navbar personalizada */
+.navbar-custom {
+    background: linear-gradient(90deg, #0056b3, #007bff);
+    padding: 10px 20px;
+}
+
+.navbar-custom .navbar-brand {
+    color: #fff;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.navbar-custom .navbar-brand:hover {
+    color: #e2e2e2;
+    text-decoration: none;
+}
+
+.navbar-custom .nav-link {
+    color: #fff;
+    transition: color 0.3s ease;
+}
+
+.navbar-custom .nav-link:hover {
+    color: #f0f0f0;
+}
+
+/* Dropdown personalizado */
 .dropdown-menu {
-    background-color: white;
-    font-family: sans-serif;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 10px 0;
+    border: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
+
+.dropdown-item {
+    padding: 10px 20px;
+    color: #333;
+    transition: background-color 0.2s ease;
+}
+
+.dropdown-item:hover {
+    background-color: #e9ecef;
+    color: #000;
+}
+
+.dropdown-item.text-danger:hover {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* Animação opcional */
+.animated-dropdown {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 
 .carousel-item img {
     margin: auto;
@@ -25,6 +87,44 @@
 #carouselControls {
   margin-top: 15px; 
 }
+
+/*---------------------------------------------*/
+
+/*Livros da Home*/
+
+
+.card {
+    height: 100%;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+}
+
+.card:hover {
+    transform: scale(1.03);
+}
+
+.card img {
+    object-fit: cover;
+    height: 250px;
+}
+
+.card-title {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.card-price {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #28a745;
+}
+
+@media (max-width: 575.98px) {
+    .card img {
+        height: 180px;
+    }
+}
+
 
 .carousel-control-prev,
 .carousel-control-next {
@@ -68,7 +168,7 @@
 /*Login Tela*/
 .home-login{
     font-family: 'Times New Roman';
-    background-color: white;
+    background-color: rgb(255, 255, 255);
 }
 .form-label {
   width: 150px;   
@@ -116,21 +216,4 @@
 .bordas {
     border: 4px solid #000; /* 4px de espessura, estilo sólido, cor preta */
     border-radius: 15px;
-}
-/*---------------------------------------------*/
-
-/*Livros da Home*/
-
-.image-card {
-    background-color: rgba(27, 95, 243, 0.76); /* fundo semitransparente */
-    padding: 10px;
-    border-radius: 8px;
-    position: relative;
-}
-
-.image-text {
-    margin-top: 8px;
-    font-weight: bold;
-    color: #333;
-    font-size: 14px;
 }

@@ -4,19 +4,21 @@
     <meta charset="UTF-8">
     <title>Login - LeiaTudo</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/css/default.css?v=1" rel="stylesheet">
+    <link rel="stylesheet" href="../css/default.css?v=2">
 
 </head>
 <body class="home-login">
+
     <div class="container text-center mt-4">
         <a class="navbar-brand" href="#">
             <img src="/css/imgs/logo.png" alt="Ícone" width="190" height="190">
         </a>
     </div>
+
     <div class="container mt-5">
-        
-        <h2 class="container text-center">Login</h2>
-        <!-- redireciona para main.php -->
+        <h2 class="text-center">Login</h2>
+
+        <!-- Formulário de login -->
         <form action="/home/main.php" method="GET">
             <div class="mb-3 d-flex flex-column align-items-start w-50 mx-auto">
                 <label for="usuario" class="form-label fw-normal fs-6">Usuário:</label>
@@ -34,13 +36,11 @@
 
             <div class="d-flex justify-content-center gap-3">
                 <button type="submit" class="btn btn-primary btn-lg w-25">Entrar</button>
-                <form action="/registro/main.php" method="GET">
-                    <button type="submit" class="btn btn-secondary btn-lg w-25">Cadastrar-se</button>
-                </form>
+                <a href="/registro/main.php" class="btn btn-secondary btn-lg w-25">Cadastrar-se</a>
             </div>
-                
         </form>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

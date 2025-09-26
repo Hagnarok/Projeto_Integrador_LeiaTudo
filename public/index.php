@@ -5,10 +5,11 @@
             <meta name="viewport" content="width=device-width, initial-scale=1" />
             <title>LeiaTudo</title>
             <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" />
-            <link href="/css/default.css" rel="stylesheet" />
+            <link rel="stylesheet" href="../css/default.css?v=2">
+
         </head>
         <body class="home-body">
-            <?php include 'registro/main.php'; ?>
+            <?php include 'login/main.php'; ?>
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
         </body>
 
