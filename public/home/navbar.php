@@ -12,7 +12,7 @@ $user = $_SESSION['user'] ?? null;
 
     <nav class="navbar navbar-expand-lg navbar-custom shadow-sm">
         <div class="container-fluid">
-            <a class="navbar-brand d-flex flex-column align-items-start" href="#">
+            <a class="navbar-brand d-flex flex-column align-items-start">
                 <div class="d-flex align-items-center gap-2">
                     <img src="/css/imgs/logo.png" alt="Ícone" width="70" height="70" class="rounded-circle">
                     <div>
@@ -59,6 +59,12 @@ $user = $_SESSION['user'] ?? null;
                             <li><a class="dropdown-item" href="#sec-documentario">Documentário</a></li>
                             <li><a class="dropdown-item" href="#sec-romance">Romance</a></li>
                             <li><a class="dropdown-item" href="#sec-ficcao">Ficção Ciêntifica</a></li>
+                            <li><a class="dropdown-item" href="#sec-fantasia">Fantasia</a></li>
+                            <li><a class="dropdown-item" href="#sec-didatico">Didático</a></li>
+                            <li><a class="dropdown-item" href="#sec-biografia">Biografia</a></li>
+                            <li><a class="dropdown-item" href="#sec-poesia">Poesia</a></li>
+                            <li><a class="dropdown-item" href="#sec-suspense">Suspense</a></li>
+         
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <a class="dropdown-item text-danger fw-bold" href="/login/main.php">

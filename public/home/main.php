@@ -1,174 +1,96 @@
 <?php
 declare(strict_types=1);
-session_start();
 
-// Protege a página
-if (!isset($_SESSION['user'])) {
-  header('Location: /login/main.php');
-  exit;
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
-$user = $_SESSION['user'];
-?>
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-  <meta charset="UTF-8">
-  <title>LeiaTudo - Home</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="../css/default.css?v=2">
-  <style>
-    .genre-btn{min-width:2.25rem}
 
-    /* Viewport fixa a altura durante a animação (evita “pulo”) */
-    .cards-viewport {
-      position: relative;
-      overflow: hidden;
-    }
+// Guarda opcional
+//// if (!isset($_SESSION['user'])) { header('Location: /login/main.php'); exit; }
+$user = $_SESSION['user'] ?? null;
 
-    /* Camadas animadas sobrepostas */
-    .cards-layer {
-      position: absolute;
-      inset: 0;
-    }
-    .slide-in-right   { transform: translateX(60px);  opacity: 0; }
-    .slide-in-left    { transform: translateX(-60px); opacity: 0; }
-    .slide-out-left   { transform: translateX(-60px); opacity: 0; }
-    .slide-out-right  { transform: translateX(60px);  opacity: 0; }
+/* =========================
+   PASSO 4: Catálogo via SQLite
+   ========================= */
+require_once __DIR__ . '/../lib/db.php';
+$pdo = db();
 
-    .slide-anim {
-      transition: transform .45s cubic-bezier(.22,.61,.36,1), opacity .45s ease;
-    }
+// últimos 8 para "destaque"
+$destaque = $pdo->query("
+  SELECT id, titulo, preco, capa_path AS img
+  FROM livros
+  ORDER BY criado_em DESC
+  LIMIT 8
+")->fetchAll(PDO::FETCH_ASSOC);
 
-    /* Stagger nos cards (entra em “cascata”) */
-    .cards .card {
-      transform: translateY(8px);
-      opacity: 0;
-      transition: transform .35s ease, opacity .35s ease;
-      transition-delay: calc(var(--i, 0) * 40ms);
-    }
-    .cards.ready .card {
-      transform: translateY(0);
-      opacity: 1;
-    }
+function fetchByGenero(PDO $pdo, string $genero, int $limit = 8): array {
+  $stmt = $pdo->prepare("
+    SELECT id, titulo, preco, capa_path AS img
+    FROM livros
+    WHERE genero = :g
+    ORDER BY criado_em DESC
+    LIMIT :lim
+  ");
+  $stmt->bindValue(':g', $genero);
+  $stmt->bindValue(':lim', $limit, PDO::PARAM_INT);
+  $stmt->execute();
+  return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 
-    /* Hover sutil */
-    .card:hover {
-      transform: translateY(-2px);
-      transition: transform .2s ease;
-    }
-
-    /* Acessibilidade: reduz movimento se o usuário preferir */
-    @media (prefers-reduced-motion: reduce) {
-      .slide-anim,
-      .cards .card {
-        transition: none !important;
-      }
-    }
-  </style>
-</head>
-<body class="home-body text-center">
-
-<?php include 'navbar.php'; ?>
-
-<?php
-// ===== Substitua pelo SELECT do seu BD, agrupando por gênero =====
 $catalogo = [
-  'destaque' => [
-    ['titulo'=>'Pequeno Príncipe','preco'=>40.00,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'1984','preco'=>39.90,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'Dom Casmurro','preco'=>29.90,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'Capitães da Areia','preco'=>34.90,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'Memórias Póstumas','preco'=>32.00,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'Grande Sertão','preco'=>49.90,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'O Alquimista','preco'=>44.90,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'A Revolução dos Bichos','preco'=>28.00,'img'=>'/css/imgs/imagem1.png'],
-  ],
-  'infantil' => [
-    ['titulo'=>'Pequeno Príncipe','preco'=>40.00,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'1984','preco'=>39.90,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'Dom Casmurro','preco'=>29.90,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'Capitães da Areia','preco'=>34.90,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'Memórias Póstumas','preco'=>32.00,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'Grande Sertão','preco'=>49.90,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'O Alquimista','preco'=>44.90,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'A Revolução dos Bichos','preco'=>28.00,'img'=>'/css/imgs/imagem1.png'],
-  ],
-  'romance' => [
-    ['titulo'=>'Pequeno Príncipe','preco'=>40.00,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'1984','preco'=>39.90,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'Dom Casmurro','preco'=>29.90,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'Capitães da Areia','preco'=>34.90,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'Memórias Póstumas','preco'=>32.00,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'Grande Sertão','preco'=>49.90,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'O Alquimista','preco'=>44.90,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'A Revolução dos Bichos','preco'=>28.00,'img'=>'/css/imgs/imagem1.png'],
-  ],
-  'documentario' => [
-    ['titulo'=>'Pequeno Príncipe','preco'=>40.00,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'1984','preco'=>39.90,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'Dom Casmurro','preco'=>29.90,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'Capitães da Areia','preco'=>34.90,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'Memórias Póstumas','preco'=>32.00,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'Grande Sertão','preco'=>49.90,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'O Alquimista','preco'=>44.90,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'A Revolução dos Bichos','preco'=>28.00,'img'=>'/css/imgs/imagem1.png'],
-  ],
-  'terror' => [
-    ['titulo'=>'Pequeno Príncipe','preco'=>40.00,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'1984','preco'=>39.90,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'Dom Casmurro','preco'=>29.90,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'Capitães da Areia','preco'=>34.90,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'Memórias Póstumas','preco'=>32.00,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'Grande Sertão','preco'=>49.90,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'O Alquimista','preco'=>44.90,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'A Revolução dos Bichos','preco'=>28.00,'img'=>'/css/imgs/imagem1.png'],
-  ],
-  'misterio' => [
-    ['titulo'=>'Pequeno Príncipe','preco'=>40.00,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'1984','preco'=>39.90,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'Dom Casmurro','preco'=>29.90,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'Capitães da Areia','preco'=>34.90,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'Memórias Póstumas','preco'=>32.00,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'Grande Sertão','preco'=>49.90,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'O Alquimista','preco'=>44.90,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'A Revolução dos Bichos','preco'=>28.00,'img'=>'/css/imgs/imagem1.png'],
-  ],
-  'ficcao' => [
-    ['titulo'=>'Pequeno Príncipe','preco'=>40.00,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'1984','preco'=>39.90,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'Dom Casmurro','preco'=>29.90,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'Capitães da Areia','preco'=>34.90,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'Memórias Póstumas','preco'=>32.00,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'Grande Sertão','preco'=>49.90,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'O Alquimista','preco'=>44.90,'img'=>'/css/imgs/imagem1.png'],
-    ['titulo'=>'A Revolução dos Bichos','preco'=>28.00,'img'=>'/css/imgs/imagem1.png'],
-  ],
+  'destaque'     => $destaque,
+  'infantil'     => fetchByGenero($pdo, 'Infantil'),
+  'romance'      => fetchByGenero($pdo, 'Romance'),
+  'documentario' => fetchByGenero($pdo, 'Não Ficção'),
+  'terror'       => fetchByGenero($pdo, 'Terror'),
+  'misterio'     => fetchByGenero($pdo, 'Mistério'),
+  'ficcao'       => fetchByGenero($pdo, 'Ficção Científica'),
+  'fantasia'     => fetchByGenero($pdo, 'Fantasia'),
+  'suspense'     => fetchByGenero($pdo, 'Suspense/Thriller'),
+  'poesia'       => fetchByGenero($pdo, 'Poesia'),
+  'biografia'    => fetchByGenero($pdo, 'Biografia'),
+  'didatico'     => fetchByGenero($pdo, 'Didático')
 ];
 
-// (funções renderCards e getOffset iguais às suas)
-function renderCards($itens, $inicio, $qtd){
+// ==== suas helpers (ou inclua de um helpers.php) ====
+function renderCards(array $itens, int $inicio, int $qtd): string{
   $html=''; $n=count($itens); if(!$n) return $html;
   for($i=0;$i<$qtd;$i++){
     $idx = ($inicio + $i) % $n;
     $lv = $itens[$idx];
-    $img = htmlspecialchars($lv['img']);
-    $titulo = htmlspecialchars($lv['titulo']);
-    $preco = number_format($lv['preco'], 2, ',', '.');
+    $id = (int)($lv['id'] ?? 0);
+    $img = htmlspecialchars($lv['img'] ?? '');
+    $titulo = htmlspecialchars($lv['titulo'] ?? '');
+    $preco = number_format((float)($lv['preco'] ?? 0), 2, ',', '.');
+    $href = "/public/livro/ver.php?id=".$id;
+
+    $badge = ($i % 3 === 0) ? "<span class='badge-top'>Top</span>" : "";
+
     $html.="
-    <div class='col-6 col-sm-4 col-md-3 col-lg-2'>
-      <div class='card h-100'>
-        <img src='$img' class='card-img-top img-fluid' alt='Capa do livro'>
-        <div class='card-body p-2'>
-          <h6 class='card-title mb-1'>$titulo</h6>
-          <p class='card-price mb-0'>R$ $preco</p>
+      <div class='col' style='--i:$i'>
+        <div class='card h-100' data-tilt='1'>
+          $badge
+          <div class='card-actions'>
+            <button class='btn-ghost' type='button' aria-label='Favoritar' title='Favoritar'>&#x2665;</button>
+            <button class='btn-ghost' type='button' aria-label='Ver detalhes' title='Ver detalhes'>&#x1F50D;</button>
+          </div>
+
+          <a class='card-fig' href='$href' title='Ler $titulo'>
+            <img src='$img' alt='Capa do livro' class='card-img-top' loading='lazy'>
+          </a>
+
+          <div class='card-body'>
+            <h6 class='card-title mb-1'>
+              <a href='$href' class='link-underline link-underline-opacity-0'>$titulo</a>
+            </h6>
+            <p class='card-price mb-0'>R$ $preco</p>
+          </div>
         </div>
-      </div>
-    </div>";
+      </div>";
   }
   return $html;
 }
-function getOffset($slug, $total, $pageSize){
+function getOffset(string $slug, int $total, int $pageSize): int{
   $k = "offset_$slug";
   $o = isset($_GET[$k]) ? intval($_GET[$k]) : 0;
   if($total>0){
@@ -179,48 +101,130 @@ function getOffset($slug, $total, $pageSize){
   return $o;
 }
 ?>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>LeiaTudo - Home</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/default.css?v=2" />
+  <style>
+    :root{
+      --cards-gap:1rem;
+      --card-radius:1rem;
+      --btn-size:44px;
+      --shadow: 0 10px 30px rgba(0,0,0,.10);
+      --shadow-hover: 0 16px 40px rgba(0,0,0,.14);
+      --grad: linear-gradient(135deg,#4da3ff, #7cc1ff 60%, #cfeaff);
+    }
 
-<div class="container py-5">
-  <?php
-    $secoes = [
-      'destaque' => 'Livros em Destaque',
-      'romance'  => 'Romance',
-      'infantil' => 'Infantil',
-      'terror'   => 'Terror',
-      'misterio' => 'Mistério',
-      'documentario' => 'Documentário',
-      'ficcao'   => 'Ficção Ciêntifica',
-    ];
-    $pageSize = 6;
+    .home-body{ background:#fff; }
+    h2{ font-weight:700; letter-spacing:.2px; }
 
-    foreach ($secoes as $slug=>$titulo):
-      $items = $catalogo[$slug] ?? [];
-      $total = count($items);
-      $offset = getOffset($slug, $total, min($pageSize, max(1,$total)));
-      $itemsJson = htmlspecialchars(json_encode($items, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES));
-  ?>
-  <section id="sec-<?= $slug ?>" class="py-4" data-genre="<?= $slug ?>" data-items='<?= $itemsJson ?>' data-page-size="<?= $pageSize ?>" data-offset="<?= $offset ?>">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h2 class="mb-0 text-start"><?= $titulo ?></h2>
-      <div class="d-flex">
-        <button type="button" class="btn btn-outline-primary btn-sm genre-btn me-2" data-dir="-1">&larr;</button>
-        <button type="button" class="btn btn-outline-primary btn-sm genre-btn" data-dir="1">&rarr;</button>
-      </div>
-    </div>
+    .section-head{ gap:.75rem; flex-wrap:wrap; }
+    .section-actions{ display:flex; align-items:center; gap:.5rem; }
+    .nav-btn{
+      width:var(--btn-size); height:var(--btn-size);
+      display:inline-flex; align-items:center; justify-content:center;
+      border-radius:999px; touch-action:manipulation; user-select:none;
+      position:relative; overflow:hidden;
+    }
+    .nav-btn::after{
+      content:''; position:absolute; inset:0; transform:scale(0);
+      background:rgba(255,255,255,.35); border-radius:inherit;
+      transition:transform .35s ease, opacity .35s ease; opacity:0;
+    }
+    .nav-btn:active::after{ transform:scale(1); opacity:1; }
+    .nav-btn:focus-visible{ outline:3px solid rgba(13,110,253,.35); outline-offset:2px; }
 
-    <!-- VIEWPORT + grade inicial -->
-    <div class="cards-viewport">
-      <div class="row g-4 justify-content-center cards">
-        <?= renderCards($items, $offset, min($pageSize, max(1,$total))) ?>
-      </div>
-    </div>
-  </section>
-  <?php endforeach; ?>
-</div>
+    .cards-viewport{ position:relative; overflow:hidden; }
+    .cards{ transition: opacity .2s ease; }
+
+    .cards-layer{ position:absolute; inset:0; z-index:1; pointer-events:none; }
+    .slide-anim{ transition: transform .5s cubic-bezier(.22,.61,.36,1), opacity .5s ease; will-change:transform,opacity; }
+    .slide-in-right{  transform: translateX(70px);  opacity:0; }
+    .slide-in-left{   transform: translateX(-70px); opacity:0; }
+    .slide-out-left{  transform: translateX(-70px); opacity:0; }
+    .slide-out-right{ transform: translateX(70px);  opacity:0; }
+
+    .cards .col{ display:flex; }
+
+    .card{
+      width:100%; border:none; border-radius:var(--card-radius);
+      box-shadow:var(--shadow); overflow:hidden; background:#fff;
+      position:relative; transform:translateZ(0);
+      transition: box-shadow .22s ease;
+      isolation:isolate;
+    }
+    .card:hover{ box-shadow:var(--shadow-hover); }
+
+    .card::before{
+      content:''; position:absolute; inset:0; border-radius:inherit; padding:1px;
+      background:var(--grad);
+      -webkit-mask-composite: xor; mask-composite: exclude; opacity:.35; pointer-events:none;
+    }
+
+    .card-fig{ position:relative; overflow:hidden; }
+    .card-img-top{
+      width:100%;
+      aspect-ratio: 3/4;
+      object-fit:cover;
+      background:#f5f7fa;
+      transform:scale(1.05);
+      opacity:0;
+      transition: transform .35s ease, opacity .35s ease;
+    }
+    .card.loaded .card-img-top{ opacity:1; }
+    .card:hover .card-img-top{ transform:scale(1.00); }
+
+    .card-actions{
+      position:absolute; top:.5rem; right:.5rem; display:flex; gap:.4rem; z-index:2;
+      opacity:0; transition: opacity .2s ease;
+    }
+    .card:hover .card-actions{ opacity:1; }
+    .btn-ghost{
+      width:36px; height:36px; border-radius:999px; border:none;
+      display:inline-flex; align-items:center; justify-content:center;
+      background:rgba(255,255,255,.85); box-shadow:0 4px 12px rgba(0,0,0,.12);
+    }
+    .btn-ghost:hover{ background:#fff; }
+
+    .badge-top{
+      position:absolute; left:.75rem; top:.75rem; z-index:2;
+      background: linear-gradient(135deg,#ff7d7d,#ffb199); color:#fff; border-radius:999px;
+      padding:.25rem .6rem; font-weight:600; font-size:.72rem; box-shadow:0 4px 10px rgba(0,0,0,.15);
+      opacity:0; transition: opacity .2s ease;
+    }
+    .card:hover .badge-top{ opacity:1; }
+
+    .card-body{ padding:.75rem .9rem; }
+    .card-title{ font-weight:700; line-height:1.25; }
+
+    .card-price{ font-weight:800; letter-spacing:.2px; color:#111; }
+
+    .cards .card{ opacity:1; transform:none; transition:none; }
+
+    @media (max-width:575.98px){
+      .cards-viewport{ margin-inline:-.25rem; }
+      .section-actions{ width:100%; justify-content:flex-end; }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .slide-anim, .cards .card, .card-img-top, .card, .card-price{
+        animation:none !important; transition:none !important;
+      }
+    }
+  </style>
+</head>
+<body class="home-body text-center">
+
+<?php include __DIR__ . '/navbar.php'; ?>
+
+<?php include __DIR__ . '/secoes.php'; ?>
 
 <script>
 (function(){
-  // ===== util: centralizar seção na viewport (considera navbar fixa) =====
   function scrollSectionIntoCenter(section, opts={}){
     const nav = document.querySelector('.navbar');
     const navH = nav ? nav.offsetHeight : 0;
@@ -229,61 +233,37 @@ function getOffset($slug, $total, $pageSize){
     const pageY = window.pageYOffset || document.documentElement.scrollTop || 0;
     const vh = window.innerHeight || document.documentElement.clientHeight;
 
-    // Se a seção for maior que a viewport, mira o topo + margem
     const bigSection = rect.height > vh * 0.9;
     const margin = 12;
 
     let targetY;
     if (bigSection) {
-      // leva o topo da seção logo abaixo da navbar
       targetY = pageY + rect.top - navH - margin;
     } else {
-      // centra verticalmente
       const centerY = pageY + rect.top + (rect.height/2);
-      targetY = centerY - (vh/2);
-      // compensa navbar (que ocupa topo da viewport)
-      targetY -= navH/2;
+      targetY = centerY - (vh/2) - navH/2;
     }
-
-    // limites
     targetY = Math.max(0, Math.round(targetY));
-
-    window.scrollTo({
-      top: targetY,
-      behavior: (opts.behavior || 'smooth')
-    });
+    window.scrollTo({ top: targetY, behavior: (opts.behavior || 'smooth') });
   }
 
-  // ===== liga centralização aos links #sec-* (menu/ancoras) =====
   function enableHashCentering(){
-    // intercepta cliques em âncoras internas
     document.querySelectorAll('a[href^="#sec-"]').forEach(a=>{
-      a.addEventListener('click', (ev)=>{
+      a.addEventListener('click',(ev)=>{
         const id = a.getAttribute('href');
         const el = document.querySelector(id);
-        if (el) {
-          ev.preventDefault();
-          history.pushState(null, '', id); // mantém hash na URL
-          scrollSectionIntoCenter(el);
-        }
+        if(el){ ev.preventDefault(); history.pushState(null,'',id); scrollSectionIntoCenter(el); }
       });
     });
-
-    // se carregar já com hash, centraliza
     function handleHash(){
-      const id = decodeURIComponent(location.hash || '');
-      if (!id) return;
+      const id = decodeURIComponent(location.hash||''); if(!id) return;
       const el = document.querySelector(id);
-      if (el) {
-        // usa timeout p/ esperar layout/ imagens
-        setTimeout(()=>scrollSectionIntoCenter(el, {behavior:'smooth'}), 0);
-      }
+      if(el){ setTimeout(()=>scrollSectionIntoCenter(el,{behavior:'smooth'}), 0); }
     }
     window.addEventListener('hashchange', handleHash);
     handleHash();
   }
 
-  // ===== integra com seu carrossel existente =====
   const sections = document.querySelectorAll('section[data-genre]');
   sections.forEach(section=>{
     const items = JSON.parse(section.dataset.items||'[]');
@@ -291,6 +271,7 @@ function getOffset($slug, $total, $pageSize){
     let cardsEl = viewport.querySelector('.cards');
     const pageSize = Number(section.dataset.pageSize||6)||6;
     let offset = Number(section.dataset.offset||0)||0;
+    let animating = false;
 
     function renderTo(container){
       const n = items.length;
@@ -298,27 +279,52 @@ function getOffset($slug, $total, $pageSize){
       for (let i=0;i<Math.min(pageSize,n);i++){
         const it = items[(offset+i)%n];
         const preco = (Number(it.preco)||0).toFixed(2).replace('.', ',');
+        const badge = (i % 3 === 0) ? "<span class='badge-top'>Top</span>" : "";
+        const href = `/public/livro/ver.php?id=${encodeURIComponent(it.id)}`;
+
         html += `
-        <div class="col-6 col-sm-4 col-md-3 col-lg-2" style="--i:${i}">
-          <div class="card h-100">
-            <img src="${it.img}" class="card-img-top img-fluid" alt="Capa do livro">
-            <div class="card-body p-2">
-              <h6 class="card-title mb-1">${it.titulo}</h6>
+        <div class="col" style="--i:${i}">
+          <div class="card h-100" data-tilt="1">
+            ${badge}
+            <div class="card-actions">
+              <button class="btn-ghost" type="button" aria-label="Favoritar" title="Favoritar">&#x2665;</button>
+              <button class="btn-ghost" type="button" aria-label="Ver detalhes" title="Ver detalhes">&#x1F50D;</button>
+            </div>
+
+            <a class="card-fig" href="${href}" title="Ler ${it.titulo}">
+              <img src="${it.img}" class="card-img-top" alt="Capa do livro" loading="lazy">
+            </a>
+
+            <div class="card-body">
+              <h6 class="card-title mb-1">
+                <a href="${href}" class="link-underline link-underline-opacity-0">${it.titulo}</a>
+              </h6>
               <p class="card-price mb-0">R$ ${preco}</p>
             </div>
           </div>
         </div>`;
       }
+
       container.innerHTML = html;
+      container.querySelectorAll('.card .card-img-top').forEach(img=>{
+        if (img.complete) img.closest('.card').classList.add('loaded');
+        else img.addEventListener('load', ()=> img.closest('.card').classList.add('loaded'), {once:true});
+      });
     }
 
     function firstRender(){
       requestAnimationFrame(()=>cardsEl.classList.add('ready'));
+      cardsEl.querySelectorAll('.card .card-img-top').forEach(img=>{
+        if (img.complete) img.closest('.card').classList.add('loaded');
+        else img.addEventListener('load', ()=> img.closest('.card').classList.add('loaded'), {once:true});
+      });
     }
 
     function step(dir){
+      if (animating) return;
       const n = items.length;
       if (!n) return;
+      animating = true;
 
       offset = (offset + dir*pageSize) % n;
       if (offset < 0) offset += n;
@@ -358,25 +364,37 @@ function getOffset($slug, $total, $pageSize){
 
         requestAnimationFrame(()=>cardsEl.classList.add('ready'));
         viewport.style.height = '';
+        animating = false;
 
-        // >>> após mudar de página, centraliza a seção na tela
         scrollSectionIntoCenter(section);
       };
       newLayer.addEventListener('transitionend', onDone, {once:true});
+      setTimeout(()=>{ if(animating){ onDone(); } }, 700);
     }
 
     section.querySelectorAll('button[data-dir]').forEach(btn=>{
       btn.addEventListener('click', ()=> step(Number(btn.dataset.dir)));
     });
 
+    section.addEventListener('keydown', (ev)=>{
+      if (ev.key === 'ArrowRight') step(1);
+      if (ev.key === 'ArrowLeft')  step(-1);
+    });
+
     firstRender();
   });
 
-  // habilita hash-centering para links de navegação
   enableHashCentering();
+
+  document.addEventListener('DOMContentLoaded',()=>{
+    document.querySelectorAll('.card .card-img-top').forEach(img=>{
+      if (img.complete) img.closest('.card').classList.add('loaded');
+      else img.addEventListener('load', ()=> img.closest('.card').classList.add('loaded'), {once:true});
+    });
+  });
+
 })();
 </script>
-
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 <?php include __DIR__ . '/../footer.php'; ?>
