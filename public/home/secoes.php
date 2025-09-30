@@ -23,13 +23,14 @@
       // se não tiver nada, nem renderiza a seção
       if ($total === 0) continue;
 
-      // normaliza para garantir id/titulo/preco/img no JSON do data-items
+      // normaliza para garantir id/titulo/preco/img/descricao no JSON do data-items
       $items = array_map(function($it){
         return [
-          'id'     => isset($it['id']) ? (int)$it['id'] : 0,
-          'titulo' => (string)($it['titulo'] ?? ''),
-          'preco'  => (float)($it['preco'] ?? 0),
-          'img'    => (string)($it['img'] ?? ''), // capa_path
+          'id'        => isset($it['id']) ? (int)$it['id'] : 0,
+          'titulo'    => (string)($it['titulo'] ?? ''),
+          'preco'     => (float)($it['preco'] ?? 0),
+          'img'       => (string)($it['img'] ?? ''),         // capa_path
+          'descricao' => (string)($it['descricao'] ?? ''),   // *** ADICIONADO ***
         ];
       }, $itemsRaw);
 

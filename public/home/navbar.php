@@ -47,7 +47,7 @@ $user = $_SESSION['user'] ?? null;
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="#">
+                                <a class="dropdown-item" href="/biblioteca_user/main.php">
                                     <i class="bi bi-book me-1"></i> Minha biblioteca
                                 </a>
                             </li>
