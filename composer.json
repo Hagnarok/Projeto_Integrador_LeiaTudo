@@ -1,7 +1,10 @@
 {
     "autoload": {
         "psr-4": {
-            "Application\\" : "src/"
+            "Application\\": "src/"
         }
+    },
+    "require": {
+        "phpmailer/phpmailer": "^6.11"
     }
 }
