@@ -26,8 +26,7 @@ function validarSenha(string $s): bool {
     return strlen($s) >= 8;
 }
 function validarEmail(string $email): bool {
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return false;
-    return preg_match('/@(gmail\.com|hotmail\.com)$/i', $email) === 1;
+    return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
 }
 function backWith(array $errors, array $old = []): void {
     $_SESSION['errors'] = $errors;
@@ -52,7 +51,7 @@ $errors = [];
 if (!validarUsuario($usuario)) $errors[] = 'Nome de usuário inválido.';
 $cpf = normalizarCpf($cpfRaw);
 if (!validarCpf($cpf)) $errors[] = 'CPF inválido.';
-if (!validarEmail($email)) $errors[] = 'Somente Gmail ou Hotmail são permitidos.';
+if (!validarEmail($email)) $errors[] = 'E-mail inválido.';
 if (!validarSenha($senha)) $errors[] = 'Senha inválida.';
 if ($senha !== $confirmarSenha) $errors[] = 'As senhas não coincidem.';
 if ($errors) backWith($errors, $old);

@@ -30,8 +30,6 @@ if ($email === '') {
     $errors[] = 'O campo e-mail é obrigatório.';
 } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     $errors[] = 'Digite um e-mail válido.';
-} elseif (!preg_match('/@(gmail\.com|hotmail\.com)$/i', $email)) {
-    $errors[] = 'Só aceitamos e-mails Gmail ou Hotmail.';
 }
 
 $_SESSION['old'] = ['email' => $email];
