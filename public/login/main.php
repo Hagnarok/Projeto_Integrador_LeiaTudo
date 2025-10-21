@@ -51,10 +51,12 @@ unset($_SESSION['errors'], $_SESSION['old'], $_SESSION['success']);
         <input type="password" name="senha" id="senha" class="form-control" required>
       </div>
 
+      <!--
       <div class="mb-3 d-flex justify-content-end">
         <a href="/login/esqueceu.php" class="small text-decoration-none">Esqueceu a senha?</a>
       </div>
-
+      -->
+      
       <div class="d-flex justify-content-center gap-3">
         <button type="submit" class="btn btn-primary btn-lg">Entrar</button>
         <a href="/registro/main.php" class="btn btn-outline-secondary btn-lg">Cadastrar-se</a>
