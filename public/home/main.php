@@ -245,7 +245,7 @@ function renderCards(array $itens, int $inicio, int $qtd): string{
     .card-title{ font-weight:700; line-height:1.25; }
     .card-price{ font-weight:800; letter-spacing:.2px; color:#111; }
 
-    /* Favorito — clean, profissional */
+
     .btn-fav{
       width:38px; height:38px; border-radius:50%; border:none;
       display:inline-flex; align-items:center; justify-content:center;

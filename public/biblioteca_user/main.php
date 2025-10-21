@@ -407,6 +407,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-<?php include __DIR__ . '/../footer.php'; ?>
+ <footer><?php include __DIR__ . '/../footer.php'; ?></footer>
 </body>
 </html>
