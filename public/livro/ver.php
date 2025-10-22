@@ -68,24 +68,154 @@ $tamEsc    = humanSize($pdfSize);
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 <style>
-:root { --brand:#0573b3; --brand-light:#0a8fd9; --text-muted:#6b7b8c; --surface:#fff; --header-h:70px; --shadow:0 6px 24px rgba(0,0,0,.08); }
-body { margin:0; font-family: "Inter", system-ui, sans-serif; background:#f7f9fc; color:#0f172a; }
-header { height:var(--header-h); background:var(--surface); box-shadow:var(--shadow); display:flex; align-items:center; padding:0 1rem; position:sticky; top:0; z-index:50; }
-.brand { display:flex; align-items:center; gap:.5rem; text-decoration:none; }
-.brand img { width:48px; height:48px; border-radius:10px; }
-.brand-title { font-weight:700; font-size:1.2rem; color:var(--brand); }
-.action-bar { margin-left:auto; display:flex; flex-wrap:wrap; gap:.5rem; }
-.btn { border-radius:10px !important; font-weight:500; }
-.btn-primary { background:var(--brand) !important; border-color:var(--brand) !important; }
-.btn-primary:hover { background:var(--brand-light) !important; }
-.meta-strip { background:var(--surface); box-shadow:var(--shadow); margin:1rem auto; border-radius:12px; padding:1rem; display:flex; gap:1rem; align-items:center; width:90%; max-width:1000px; }
-.cover { width:90px; height:120px; border-radius:10px; object-fit:cover; box-shadow:var(--shadow); }
-.book-title { font-weight:700; margin-bottom:.3rem; }
-.book-sub { color: var(--text-muted); font-size:.9rem; }
-#pdf-canvas { border:1px solid #ccc; box-shadow:var(--shadow); display:block; margin:auto; background:#fff; }
-.viewer-controls { display:flex; justify-content:center; gap:.5rem; flex-wrap:wrap; margin:1rem 0; }
-.reader-compact header, .reader-compact .meta-strip { display:none !important; }
-.reader-toggle { position:fixed; bottom:1.2rem; right:1.2rem; z-index:120; border-radius:50%; width:50px; height:50px; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow); background:#fff; cursor:pointer; }
+:root {
+  --brand: #0573b3;
+  --brand-light: #0a8fd9;
+  --text-muted: #6b7b8c;
+  --surface: #fff;
+  --header-h: 70px;
+  --shadow: 0 6px 24px rgba(0,0,0,.08);
+  --transition-speed: 0.25s;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", system-ui, sans-serif;
+  background: #f7f9fc;
+  color: #0f172a;
+}
+
+header {
+  height: var(--header-h);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  text-decoration: none;
+}
+.brand img {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  transition: transform var(--transition-speed);
+}
+.brand:hover img { transform: scale(1.05); }
+.brand-title {
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: var(--brand);
+}
+
+.action-bar {
+  margin-left: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+
+.btn {
+  border-radius: 12px !important;
+  font-weight: 500;
+  transition: all var(--transition-speed);
+}
+.btn-primary {
+  background: var(--brand) !important;
+  border-color: var(--brand) !important;
+}
+.btn-primary:hover {
+  background: var(--brand-light) !important;
+  transform: translateY(-2px);
+}
+.btn-danger:hover { transform: translateY(-2px); }
+
+.meta-strip {
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  margin: 1rem auto;
+  border-radius: 14px;
+  padding: 1rem 1.5rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  width: 90%;
+  max-width: 1000px;
+}
+
+.cover {
+  width: 100px;
+  height: 140px;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: var(--shadow);
+  transition: transform var(--transition-speed);
+}
+.cover:hover { transform: scale(1.05); }
+
+.book-title { font-weight: 700; margin-bottom: .3rem; font-size: 1.25rem; }
+.book-sub { color: var(--text-muted); font-size: .95rem; }
+
+#pdf-canvas {
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  box-shadow: var(--shadow);
+  display: block;
+  margin: 2rem auto;
+  transition: all var(--transition-speed);
+  background: #fff;
+}
+
+.viewer-controls {
+  display: flex;
+  justify-content: center;
+  gap: .5rem;
+  flex-wrap: wrap;
+  margin: 1rem 0;
+  transition: transform 0.3s ease, top 0.3s ease;
+  position: relative;
+}
+
+.viewer-controls.fixed {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255,255,255,0.95);
+  padding: .5rem 1rem;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  z-index: 100;
+}
+
+.reader-toggle {
+  position: fixed;
+  bottom: 1.2rem;
+  right: 1.2rem;
+  z-index: 120;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow);
+  background: #fff;
+  cursor: pointer;
+  transition: all var(--transition-speed);
+}
+
+.reader-toggle:hover { transform: scale(1.1); }
+
+.reader-compact header,
+.reader-compact .meta-strip { display: none !important; }
 </style>
 </head>
 <body>
@@ -196,10 +326,34 @@ function toggleReader(force){
   const on = document.body.classList.toggle("reader-compact", force);
   exitBtn.classList.toggle("d-none", !on);
 }
-document.getElementById("exitRead").addEventListener("click", ()=>toggleReader(false));
+exitBtn.addEventListener("click", ()=>toggleReader(false));
 document.addEventListener("keydown", e=>{ if(e.key.toLowerCase()==='l') toggleReader(); });
 canvas.addEventListener("dblclick", ()=>toggleReader(true));
 
+// Controles animados
+const controls = document.querySelector(".viewer-controls");
+function updateControlsPosition() {
+  const rect = canvas.getBoundingClientRect();
+  const scrollY = window.scrollY || window.pageYOffset;
+  const pdfTop = rect.top + scrollY;
+  const pdfBottom = pdfTop + canvas.height;
+  const windowBottom = scrollY + window.innerHeight;
+
+  if (windowBottom >= pdfBottom - 10) {
+    controls.classList.add("fixed");
+    controls.style.top = window.innerHeight - controls.offsetHeight - 10 + "px";
+  } else if (scrollY + 20 <= pdfTop) {
+    controls.classList.add("fixed");
+    controls.style.top = pdfTop - controls.offsetHeight - 10 + "px";
+  } else {
+    controls.classList.remove("fixed");
+    controls.style.top = "";
+  }
+}
+
+window.addEventListener("scroll", updateControlsPosition);
+window.addEventListener("resize", updateControlsPosition);
+updateControlsPosition();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </body>
