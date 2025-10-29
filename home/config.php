@@ -43,5 +43,32 @@ function get_pdo(): PDO {
     CREATE INDEX IF NOT EXISTS idx_users_email    ON users(email);
   ");
 
+  // ====== Migrações idempotentes para enriquecer o schema de users
+  $cols = $pdo->query("PRAGMA table_info(users)")->fetchAll(PDO::FETCH_ASSOC);
+  $have = array_column($cols, 'name');
+  if (!in_array('last_login', $have, true)) {
+    $pdo->exec("ALTER TABLE users ADD COLUMN last_login TEXT DEFAULT NULL");
+  }
+  if (!in_array('is_active', $have, true)) {
+    $pdo->exec("ALTER TABLE users ADD COLUMN is_active INTEGER NOT NULL DEFAULT 1");
+  }
+  if (!in_array('full_name', $have, true)) {
+    $pdo->exec("ALTER TABLE users ADD COLUMN full_name TEXT DEFAULT NULL");
+  }
+  if (!in_array('role', $have, true)) {
+    $pdo->exec("ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'user'");
+  }
+
+  // ====== Tabela para reset de senha (centralizada aqui)
+  $pdo->exec("CREATE TABLE IF NOT EXISTS password_resets (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    token TEXT NOT NULL UNIQUE,
+    expiracao TEXT NOT NULL,
+    criado_em TEXT NOT NULL DEFAULT (datetime('now')),
+    FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+  )");
+  $pdo->exec("CREATE INDEX IF NOT EXISTS idx_password_resets_user ON password_resets(user_id)");
+
   return $pdo;
 }

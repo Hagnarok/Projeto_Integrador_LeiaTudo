@@ -74,5 +74,16 @@ function db(): PDO {
     CREATE INDEX IF NOT EXISTS idx_user_favoritos_livro ON user_favoritos(livro_id);
   ");
 
+  // Migrações pequenas e índices adicionais (idempotentes)
+  $colsLivros = $pdo->query("PRAGMA table_info(livros)")->fetchAll(PDO::FETCH_ASSOC);
+  $haveLivros = array_column($colsLivros, 'name');
+  if (!in_array('slug', $haveLivros, true)) {
+    $pdo->exec("ALTER TABLE livros ADD COLUMN slug TEXT DEFAULT NULL");
+  }
+
+  // Índices úteis para busca rápida (títulos/autores)
+  $pdo->exec("CREATE INDEX IF NOT EXISTS idx_livros_titulo ON livros(titulo)");
+  $pdo->exec("CREATE INDEX IF NOT EXISTS idx_livros_autor ON livros(autor)");
+
   return $pdo;
 }

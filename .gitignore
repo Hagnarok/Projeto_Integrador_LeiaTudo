@@ -1,1 +1,10 @@
-vendor
+/# Ignore session files created at runtime
+data/sessions/
+
+# Ignore OS/editor files
+.vscode/
+.idea/
+.DS_Store
+
+# Ignore PHP built-in server file (if any)
+*.logvendor
