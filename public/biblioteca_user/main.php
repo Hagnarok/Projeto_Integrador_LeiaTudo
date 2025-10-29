@@ -30,7 +30,7 @@ $favoritadosIds = array_map('intval', array_column($favIdsStmt->fetchAll(PDO::FE
 
 // Seção: Favoritos (lista de livros favoritados)
 $favStmt = $pdo->prepare("
-  SELECT l.id, l.titulo, l.preco, l.capa_path AS img, uf.criado_em AS favoritado_em
+  SELECT l.id, l.titulo, l.preco, l.publicado_por, l.criado_por_username, l.capa_path AS img, uf.criado_em AS favoritado_em
   FROM user_favoritos uf
   JOIN livros l ON l.id = uf.livro_id
   WHERE uf.user_id = :uid
@@ -41,7 +41,7 @@ $favoritos = $favStmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Seção: Meus livros (cadastrados por mim)
 $mineStmt = $pdo->prepare("
-  SELECT id, titulo, preco, capa_path AS img, criado_em
+  SELECT id, titulo, preco, publicado_por, criado_por_username, capa_path AS img, criado_em
   FROM livros
   WHERE criado_por_id = :uid
   ORDER BY criado_em DESC
@@ -80,7 +80,8 @@ function formatItemsForDataAttr(array $arr): string{
     $out[] = [
       'id'     => (int)$it['id'],
       'titulo' => (string)$it['titulo'],
-      'preco'  => (float)($it['preco'] ?? 0),
+      'publicado_por'  => (string)($it['publicado_por'] ?? ''),
+      'criado_por_username' => (string)($it['criado_por_username'] ?? ''),
       'img'    => (string)($it['img'] ?? ''),
     ];
   }
@@ -271,7 +272,14 @@ elseif (is_file($try2)) { include $try2; $navOk=true; }
               $id     = (int)$it['id'];
               $img    = htmlspecialchars($it['img'] ?? '');
               $titulo = htmlspecialchars($it['titulo'] ?? '');
-              $preco  = number_format((float)($it['preco'] ?? 0), 2, ',', '.');
+              // Preferir o nome do usuário que criou o livro; caso não exista, usar o campo publicado_por (texto livre)
+              $publicado_por_raw = '';
+              if (!empty($it['criado_por_username'])) {
+                $publicado_por_raw = (string)$it['criado_por_username'];
+              } elseif (!empty($it['publicado_por'])) {
+                $publicado_por_raw = (string)$it['publicado_por'];
+              }
+              $publicado_por = htmlspecialchars($publicado_por_raw, ENT_QUOTES, 'UTF-8');
               $href   = "/public/livro/ver.php?id=".$id;
               $badge  = ($i % 3 === 0) ? "<span class='badge-top'>Top</span>" : "";
               $isFav  = in_array($id, $favoritadosIds, true);
@@ -304,7 +312,9 @@ elseif (is_file($try2)) { include $try2; $navOk=true; }
                   <h6 class="card-title mb-1">
                     <a href="<?= $href ?>" class="link-underline link-underline-opacity-0"><?= $titulo ?></a>
                   </h6>
-                  <p class="card-price mb-0">R$ <?= $preco ?></p>
+                  <?php if ($publicado_por_raw !== ''): ?>
+                    <p class="card-price mb-0"><span class="ms-2 text-secondary">Por: <?= $publicado_por ?></span></p>
+                  <?php endif; ?>
                 </div>
               </div>
             </div>
@@ -350,7 +360,14 @@ elseif (is_file($try2)) { include $try2; $navOk=true; }
               $id     = (int)$it['id'];
               $img    = htmlspecialchars($it['img'] ?? '');
               $titulo = htmlspecialchars($it['titulo'] ?? '');
-              $preco  = number_format((float)($it['preco'] ?? 0), 2, ',', '.');
+              // Preferir mostrar o nome de quem publicou (criado_por_username) ou o texto publicado_por
+              $publicado_por_raw = '';
+              if (!empty($it['criado_por_username'])) {
+                $publicado_por_raw = (string)$it['criado_por_username'];
+              } elseif (!empty($it['publicado_por'])) {
+                $publicado_por_raw = (string)$it['publicado_por'];
+              }
+              $publicado_por = htmlspecialchars($publicado_por_raw, ENT_QUOTES, 'UTF-8');
               $href   = "/public/livro/ver.php?id=".$id;
               $badge  = ($i % 3 === 0) ? "<span class='badge-top'>Top</span>" : "";
               $isFav  = in_array($id, $favoritadosIds, true);
@@ -383,7 +400,9 @@ elseif (is_file($try2)) { include $try2; $navOk=true; }
                   <h6 class="card-title mb-1">
                     <a href="<?= $href ?>" class="link-underline link-underline-opacity-0"><?= $titulo ?></a>
                   </h6>
-                  <p class="card-price mb-0">R$ <?= $preco ?></p>
+                  <?php if ($publicado_por_raw !== ''): ?>
+                    <p class="card-price mb-0"><span class="ms-2 text-secondary">Por: <?= $publicado_por ?></span></p>
+                  <?php endif; ?>
                 </div>
               </div>
             </div>

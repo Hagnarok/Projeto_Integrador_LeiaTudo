@@ -11,10 +11,9 @@ if ($id <= 0) { http_response_code(400); echo "ID inválido."; exit; }
 
 $pdo = db();
 $stmt = $pdo->prepare("
-  SELECT id, titulo, autor, genero, preco, descricao, pdf_path, capa_path, criado_por_id, criado_por_username
+  SELECT id, titulo, autor, genero, publicado_por, descricao, pdf_path, capa_path, criado_por_id, criado_por_username
   FROM livros WHERE id = :id LIMIT 1
 ");
-$stmt->execute([':id' => $id]);
 $livro = $stmt->fetch(PDO::FETCH_ASSOC);
 if (!$livro) { http_response_code(404); echo "Livro não encontrado."; exit; }
 
@@ -94,12 +93,11 @@ $generos = [
               </select>
             </div>
 
-            <!-- Preço -->
+            <!-- Publicado por -->
             <div class="mb-3">
-              <label for="preco" class="form-label">Preço (R$)</label>
-              <input type="text" id="preco" name="preco" class="form-control" required
-                     value="<?= number_format((float)$livro['preco'], 2, ',', '.') ?>">
-              <div class="form-text">Aceita 39,90 ou 39.90</div>
+              <label for="publicado_por" class="form-label">Publicado por</label>
+              <input type="text" id="publicado_por" name="publicado_por" class="form-control" required
+                     value="<?= h($livro['publicado_por'] ?? '') ?>">
             </div>
 
             <!-- Descrição -->

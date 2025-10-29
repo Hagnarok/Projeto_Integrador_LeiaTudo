@@ -39,16 +39,24 @@ unset($_SESSION['errors'], $_SESSION['old'], $_SESSION['success']);
       </div>
     <?php endif; ?>
 
-    <form action="processa_login.php" method="POST" novalidate>
+    <!-- Evita autofill agressivo: form autocomplete off e campos com atributos
+         explícitos. Também adicionamos um campo escondido para capturar
+         autofill de navegadores que ignoram autocomplete="off". -->
+    <form action="/login/processa_login.php" method="POST" novalidate autocomplete="off">
+
+      <!-- campo "falso" para reduzir autofill indesejado -->
+      <input type="text" name="fake_username" id="fake_username" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;opacity:0;" autocomplete="username">
+
       <div class="mb-3">
         <label for="usuario" class="form-label">Usuário ou E-mail</label>
         <input type="text" name="usuario" id="usuario" class="form-control" required
-               value="<?= htmlspecialchars($old['usuario'] ?? '') ?>">
+               value="<?= htmlspecialchars($old['usuario'] ?? '') ?>"
+               autocomplete="username" autocorrect="off" autocapitalize="none" spellcheck="false">
       </div>
 
       <div class="mb-3">
         <label for="senha" class="form-label">Senha</label>
-        <input type="password" name="senha" id="senha" class="form-control" required>
+        <input type="password" name="senha" id="senha" class="form-control" required autocomplete="current-password">
       </div>
 
       <!--

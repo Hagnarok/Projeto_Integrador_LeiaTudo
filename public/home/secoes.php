@@ -28,9 +28,11 @@
         return [
           'id'        => isset($it['id']) ? (int)$it['id'] : 0,
           'titulo'    => (string)($it['titulo'] ?? ''),
-          'preco'     => (float)($it['preco'] ?? 0),
+          'user'      => (float)($it['user_id'] ?? 0),
           'img'       => (string)($it['img'] ?? ''),         // capa_path
           'descricao' => (string)($it['descricao'] ?? ''),   // *** ADICIONADO ***
+          'publicado_por' => (string)($it['publicado_por'] ?? ''),
+          'criado_por_username' => (string)($it['criado_por_username'] ?? ''),
         ];
       }, $itemsRaw);
 

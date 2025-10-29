@@ -15,7 +15,7 @@ $pdo = db();
    ========================= */
 function fetchByGenero(PDO $pdo, string $genero, int $limit = 8): array {
   $stmt = $pdo->prepare("
-    SELECT id, titulo, preco, capa_path AS img, descricao
+    SELECT id, titulo, preco, publicado_por, criado_por_username, capa_path AS img, descricao
     FROM livros
     WHERE genero = :g
     ORDER BY criado_em DESC
@@ -28,7 +28,7 @@ function fetchByGenero(PDO $pdo, string $genero, int $limit = 8): array {
 }
 
 $destaque = $pdo->query("
-  SELECT id, titulo, preco, capa_path AS img, descricao
+  SELECT id, titulo, preco, publicado_por, criado_por_username, capa_path AS img, descricao
   FROM livros
   ORDER BY criado_em DESC
   LIMIT 8
@@ -91,10 +91,17 @@ function renderCards(array $itens, int $inicio, int $qtd): string{
     $idx = ($inicio + $i) % $n;
     $lv = $itens[$idx];
 
-    $id     = (int)($lv['id'] ?? 0);
-    $img    = htmlspecialchars((string)($lv['img'] ?? ''), ENT_QUOTES, 'UTF-8');
-    $titulo = htmlspecialchars((string)($lv['titulo'] ?? ''), ENT_QUOTES, 'UTF-8');
-    $preco  = number_format((float)($lv['preco'] ?? 0), 2, ',', '.');
+  $id     = (int)($lv['id'] ?? 0);
+  $img    = htmlspecialchars((string)($lv['img'] ?? ''), ENT_QUOTES, 'UTF-8');
+  $titulo = htmlspecialchars((string)($lv['titulo'] ?? ''), ENT_QUOTES, 'UTF-8');
+  // Preferir o nome do usuário que criou o livro (criado_por_username); se ausente, usar o texto publicado_por
+  $publicadoPorRaw = '';
+  if (!empty($lv['criado_por_username'])) {
+    $publicadoPorRaw = (string)$lv['criado_por_username'];
+  } elseif (!empty($lv['publicado_por'])) {
+    $publicadoPorRaw = (string)$lv['publicado_por'];
+  }
+  $publicadoPor = htmlspecialchars($publicadoPorRaw, ENT_QUOTES, 'UTF-8');
     $href   = "/public/livro/ver.php?id=".$id;
 
     $badge  = ($i % 3 === 0) ? "<span class='badge-top'>Top</span>" : "";
@@ -130,7 +137,9 @@ function renderCards(array $itens, int $inicio, int $qtd): string{
                 <i class='bi bi-search'></i>
               </button>";
 
-    $html .= "
+  $pubHtml = ($publicadoPorRaw !== '') ? "<p class='card-price mb-0'><span class='ms-2 text-secondary'>Por: {$publicadoPor}</span></p>" : "";
+
+  $html .= "
       <div class='col' style='--i:{$i}'>
         <div class='card h-100' data-tilt='1'>
           {$badge}
@@ -143,11 +152,11 @@ function renderCards(array $itens, int $inicio, int $qtd): string{
             <img src='{$img}' alt='Capa do livro' class='card-img-top' loading='lazy'>
           </a>
 
-          <div class='card-body'>
+            <div class='card-body'>
             <h6 class='card-title mb-1'>
               <a href='{$href}' class='link-underline link-underline-opacity-0'>{$titulo}</a>
             </h6>
-            <p class='card-price mb-0'>R$ {$preco}</p>
+            {$pubHtml}
           </div>
         </div>
       </div>";
@@ -377,7 +386,7 @@ window.userFavIds = <?= $userFavJson ?: '[]' ?>;
       let html = '';
       for (let i=0;i<Math.min(pageSize,n);i++){
         const it = items[(offset+i)%n];
-        const preco = (Number(it.preco)||0).toFixed(2).replace('.', ',');
+  const publicadoPor = String(it.criado_por_username || it.publicado_por || '');
         const badge = (i % 3 === 0) ? "<span class='badge-top'>Top</span>" : "";
         const href = `/public/livro/ver.php?id=${encodeURIComponent(it.id)}`;
         const isFav = favSet.has(it.id);
@@ -406,6 +415,7 @@ window.userFavIds = <?= $userFavJson ?: '[]' ?>;
         // Botão de detalhes abrindo o modal com descrição (vem do data-items)
         const safeTitle = String(it.titulo || '').replace(/"/g,'&quot;');
         const safeDesc  = String(it.descricao || '').replace(/"/g,'&quot;');
+  function publishedSafe(s){ return String(s).replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
         const eyeBtn = `
           <button type="button" class="btn-eye btn-details"
                   data-bs-toggle="modal"
@@ -434,7 +444,7 @@ window.userFavIds = <?= $userFavJson ?: '[]' ?>;
               <h6 class="card-title mb-1">
                 <a href="${href}" class="link-underline link-underline-opacity-0">${safeTitle}</a>
               </h6>
-              <p class="card-price mb-0">R$ ${preco}</p>
+              <p class="card-price mb-0"><span class="ms-2 text-secondary">Por: ${publishedSafe(publicadoPor)}</span></p>
             </div>
           </div>
         </div>`;

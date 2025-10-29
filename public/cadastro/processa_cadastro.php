@@ -20,20 +20,15 @@ try {
   $titulo    = trim($_POST['titulo'] ?? '');
   $autor     = trim($_POST['autor'] ?? '');
   $genero    = trim($_POST['genero'] ?? '');
-  $precoRaw  = $_POST['preco'] ?? '';
+  $publicadoPor = trim($_POST['publicado_por'] ?? '');
   $descricao = trim($_POST['descricao'] ?? '');
 
-  if ($titulo === '' || $autor === '' || $genero === '' || $precoRaw === '' ||
+  if ($titulo === '' || $autor === '' || $genero === '' || $publicadoPor === '' ||
       !isset($_FILES['pdf']) || !isset($_FILES['capa'])) {
     throw new Exception('Campos obrigatórios ausentes.');
   }
-
-  // Normaliza preço ("1.234,56" -> "1234.56")
-  $precoNorm = str_replace(['.', ','], ['', '.'], (string)$precoRaw);
-  if (!is_numeric($precoNorm) || (float)$precoNorm < 0) {
-    throw new Exception('Preço inválido.');
-  }
-  $preco = (float)$precoNorm;
+  // Limita tamanho do campo publicado_por
+  $publicadoPor = substr($publicadoPor, 0, 255);
 
   // Pastas
   $baseUploads = __DIR__ . '/../uploads';
@@ -101,15 +96,15 @@ try {
   $pdo = db();
   $stmt = $pdo->prepare("
     INSERT INTO livros
-      (titulo, autor, genero, preco, descricao, pdf_path, capa_path, criado_por_id, criado_por_username)
+      (titulo, autor, genero, publicado_por, descricao, pdf_path, capa_path, criado_por_id, criado_por_username)
     VALUES
-      (:titulo, :autor, :genero, :preco, :descricao, :pdf_path, :capa_path, :uid, :uname)
+      (:titulo, :autor, :genero, :publicado_por, :descricao, :pdf_path, :capa_path, :uid, :uname)
   ");
   $stmt->execute([
     ':titulo'    => $titulo,
     ':autor'     => $autor,
     ':genero'    => $genero,
-    ':preco'     => $preco,
+    ':publicado_por' => $publicadoPor,
     ':descricao' => $descricao,
     ':pdf_path'  => $pdfDestRel,
     ':capa_path' => $capaDestRel,

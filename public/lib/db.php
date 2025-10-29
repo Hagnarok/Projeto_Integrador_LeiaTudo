@@ -29,13 +29,14 @@ function db(): PDO {
   $pdo->exec('PRAGMA synchronous = NORMAL;');
 
   // ====== Tabela LIVROS (como você já tinha) ======
+  // Cria tabela livros; preco agora permite NULL por compatibilidade com migrações
   $pdo->exec("
     CREATE TABLE IF NOT EXISTS livros (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       titulo TEXT NOT NULL,
       autor TEXT NOT NULL,
       genero TEXT NOT NULL,
-      preco REAL NOT NULL,
+      preco REAL DEFAULT NULL,
       descricao TEXT,
       pdf_path TEXT NOT NULL,
       capa_path TEXT NOT NULL,
@@ -46,7 +47,6 @@ function db(): PDO {
     CREATE INDEX IF NOT EXISTS idx_livros_genero    ON livros(genero);
     CREATE INDEX IF NOT EXISTS idx_livros_criado_em ON livros(criado_em);
   ");
-
   // (Opcional) Se vier de versões antigas sem colunas de autoria, garante via ALTER
   $cols = $pdo->query("PRAGMA table_info(livros)")->fetchAll(PDO::FETCH_ASSOC);
   $have = array_column($cols, 'name');
@@ -55,6 +55,11 @@ function db(): PDO {
   }
   if (!in_array('criado_por_username', $have, true)) {
     $pdo->exec("ALTER TABLE livros ADD COLUMN criado_por_username TEXT");
+  }
+
+  // Adiciona coluna 'publicado_por' para registrar o nome de quem publicou
+  if (!in_array('publicado_por', $have, true)) {
+    $pdo->exec("ALTER TABLE livros ADD COLUMN publicado_por TEXT DEFAULT NULL");
   }
 
   // ====== Tabela de FAVORITOS ======
@@ -79,6 +84,61 @@ function db(): PDO {
   $haveLivros = array_column($colsLivros, 'name');
   if (!in_array('slug', $haveLivros, true)) {
     $pdo->exec("ALTER TABLE livros ADD COLUMN slug TEXT DEFAULT NULL");
+  }
+
+  // Se a coluna 'preco' existir e estiver NOT NULL (versões antigas), recria a tabela para permitir NULL
+  foreach ($colsLivros as $c) {
+    if ($c['name'] === 'preco' && (int)$c['notnull'] === 1) {
+      // realiza migração segura: cria tabela temporária com preco NULL, copia dados e renomeia
+      try {
+        $pdo->beginTransaction();
+
+        // cria tabela nova com esquema atualizado (preco NULL)
+        $pdo->exec("CREATE TABLE IF NOT EXISTS livros_new (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          titulo TEXT NOT NULL,
+          autor TEXT NOT NULL,
+          genero TEXT NOT NULL,
+          preco REAL DEFAULT NULL,
+          descricao TEXT,
+          pdf_path TEXT NOT NULL,
+          capa_path TEXT NOT NULL,
+          criado_em DATETIME NOT NULL DEFAULT (datetime('now','localtime')),
+          criado_por_id INTEGER,
+          criado_por_username TEXT,
+          publicado_por TEXT DEFAULT NULL,
+          slug TEXT DEFAULT NULL
+        );");
+
+        // determina colunas existentes na tabela antiga para copiar apenas as que existem
+        $oldCols = array_column($colsLivros, 'name');
+        $colsToCopy = array_values(array_intersect($oldCols, [
+          'id','titulo','autor','genero','preco','descricao','pdf_path','capa_path','criado_em','criado_por_id','criado_por_username','publicado_por','slug'
+        ]));
+
+        if (count($colsToCopy) > 0) {
+          $colList = implode(',', $colsToCopy);
+          $pdo->exec("INSERT INTO livros_new ({$colList}) SELECT {$colList} FROM livros;");
+        }
+
+        // substitui as tabelas
+        $pdo->exec("DROP TABLE livros;");
+        $pdo->exec("ALTER TABLE livros_new RENAME TO livros;");
+
+        // recria índices
+        $pdo->exec("CREATE INDEX IF NOT EXISTS idx_livros_genero    ON livros(genero);");
+        $pdo->exec("CREATE INDEX IF NOT EXISTS idx_livros_criado_em ON livros(criado_em);");
+        $pdo->exec("CREATE INDEX IF NOT EXISTS idx_livros_titulo ON livros(titulo);");
+        $pdo->exec("CREATE INDEX IF NOT EXISTS idx_livros_autor ON livros(autor);");
+
+        $pdo->commit();
+      } catch (Throwable $e) {
+        try { $pdo->rollBack(); } catch (Throwable $_) {}
+        // não interrompe a execução; lança uma exceção para depuração
+        throw $e;
+      }
+      break;
+    }
   }
 
   // Índices úteis para busca rápida (títulos/autores)

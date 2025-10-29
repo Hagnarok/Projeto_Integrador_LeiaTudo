@@ -61,8 +61,8 @@
 
             <!-- Preço -->
             <div class="mb-3">
-              <label for="preco" class="form-label">Preço (R$)</label>
-              <input type="number" class="form-control" id="preco" name="preco" required min="0" step="0.01" placeholder="Ex.: 39.90">
+              <label for="publicado_por" class="form-label">Publicado por</label>
+              <input type="text" class="form-control" id="publicado_por" name="publicado_por" required placeholder="Nome de quem publicou">
             </div>
 
             <!-- Descrição -->

@@ -35,19 +35,14 @@ try {
   $titulo    = trim($_POST['titulo'] ?? '');
   $autor     = trim($_POST['autor'] ?? '');
   $genero    = trim($_POST['genero'] ?? '');
-  $precoRaw  = $_POST['preco'] ?? '';
+  $publicadoPor = trim($_POST['publicado_por'] ?? '');
   $descricao = trim($_POST['descricao'] ?? '');
 
-  if ($titulo === '' || $autor === '' || $genero === '' || $precoRaw === '') {
+  if ($titulo === '' || $autor === '' || $genero === '' || $publicadoPor === '') {
     throw new Exception('Campos obrigatórios ausentes.');
   }
 
-  // normaliza preço: "1.234,56" -> 1234.56
-  $precoNorm = str_replace(['.', ','], ['', '.'], (string)$precoRaw);
-  if (!is_numeric($precoNorm) || (float)$precoNorm < 0) {
-    throw new Exception('Preço inválido.');
-  }
-  $preco = (float)$precoNorm;
+  $publicadoPor = substr($publicadoPor, 0, 255);
 
   // 3) Uploads (opcionais)
   $baseUploads = __DIR__ . '/../uploads';
@@ -122,13 +117,13 @@ try {
   // 4) UPDATE
   $up = $pdo->prepare("
     UPDATE livros
-       SET titulo = :titulo,
-           autor = :autor,
-           genero = :genero,
-           preco = :preco,
-           descricao = :descricao,
-           pdf_path = :pdf,
-           capa_path = :capa
+      SET titulo = :titulo,
+        autor = :autor,
+        genero = :genero,
+        publicado_por = :publicado_por,
+        descricao = :descricao,
+        pdf_path = :pdf,
+        capa_path = :capa
      WHERE id = :id
      LIMIT 1
   ");
@@ -136,7 +131,7 @@ try {
     ':titulo' => $titulo,
     ':autor'  => $autor,
     ':genero' => $genero,
-    ':preco'  => $preco,
+  ':publicado_por' => $publicadoPor,
     ':descricao' => $descricao,
     ':pdf'    => $pdf_path,
     ':capa'   => $capa_path,

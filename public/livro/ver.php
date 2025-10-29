@@ -192,7 +192,7 @@ header{
 <?php if($autorEsc): ?>de <strong><?= $autorEsc ?></strong><?php endif; ?>
 <?php if($tamEsc): ?><span class="ms-2"><?= $tamEsc ?></span><?php endif; ?>
 <?php if($criado): ?><span class="ms-2 text-secondary"><?= htmlspecialchars($criado,ENT_QUOTES,'UTF-8') ?></span><?php endif; ?>
-<?php if($ownerName): ?><span class="ms-2 text-secondary">por: <?= htmlspecialchars($ownerName,ENT_QUOTES,'UTF-8') ?></span><?php endif; ?>
+<?php if($ownerName): ?><span class="ms-2 text-secondary">Por: <?= htmlspecialchars($ownerName,ENT_QUOTES,'UTF-8') ?></span><?php endif; ?>
 </p>
 </div>
 </section>
