@@ -51,13 +51,26 @@ unset($_SESSION['errors'], $_SESSION['old'], $_SESSION['success']);
         <label for="usuario" class="form-label">Usuário ou E-mail</label>
         <input type="text" name="usuario" id="usuario" class="form-control" required
                value="<?= htmlspecialchars($old['usuario'] ?? '') ?>"
-               autocomplete="username" autocorrect="off" autocapitalize="none" spellcheck="false">
+               autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false"
+               readonly onfocus="this.removeAttribute('readonly');">
       </div>
 
       <div class="mb-3">
         <label for="senha" class="form-label">Senha</label>
-        <input type="password" name="senha" id="senha" class="form-control" required autocomplete="current-password">
+        <input type="password" name="senha" id="senha" class="form-control" required autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly');">
       </div>
+
+      <script>
+        // tenta limpar valores que alguns navegadores já preencheram
+        document.addEventListener('DOMContentLoaded', function(){
+          try {
+            var u = document.getElementById('usuario');
+            var p = document.getElementById('senha');
+            if (u && u.getAttribute('autocomplete') === 'off') u.value = '';
+            if (p && p.getAttribute('autocomplete') === 'new-password') p.value = '';
+          } catch(e){}
+        });
+      </script>
 
       <!--
       <div class="mb-3 d-flex justify-content-end">

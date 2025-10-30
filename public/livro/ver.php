@@ -223,7 +223,7 @@ const pageNumElem = document.getElementById("page_num");
 const pageCountElem = document.getElementById("page_count");
 const zoomRange = document.getElementById("zoomRange");
 const zoomVal = document.getElementById("zoomVal");
-const saveKey = "pdf_page_<?= (int)$id ?>";
+const saveKey = "pdf_page_<?= (int)$id ?>_<?= (int)($currUser['id'] ?? 0) ?>"; // inclui user id para isolar progresso por usuário
 
 // Modo leitura elementos
 const exitBtn = document.getElementById("exitRead");
