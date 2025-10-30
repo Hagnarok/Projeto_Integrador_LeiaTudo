@@ -45,8 +45,20 @@ try {
   $uniq     = time() . '_' . mt_rand(1000, 9999);
 
   // ===== PDF =====
-  if (($_FILES['pdf']['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
-    throw new Exception('Falha no upload do PDF.');
+  $pdfErr = $_FILES['pdf']['error'] ?? UPLOAD_ERR_NO_FILE;
+  if ($pdfErr !== UPLOAD_ERR_OK) {
+    // Mapeia códigos de erro para mensagens mais amigáveis
+    $map = [
+      UPLOAD_ERR_INI_SIZE   => 'O arquivo excede upload_max_filesize no servidor.',
+      UPLOAD_ERR_FORM_SIZE  => 'O arquivo excede o MAX_FILE_SIZE especificado no formulário.',
+      UPLOAD_ERR_PARTIAL    => 'O upload foi feito parcialmente.',
+      UPLOAD_ERR_NO_FILE    => 'Nenhum arquivo foi enviado.',
+      UPLOAD_ERR_NO_TMP_DIR => 'Pasta temporária ausente no servidor.',
+      UPLOAD_ERR_CANT_WRITE => 'Falha ao gravar o arquivo em disco.',
+      UPLOAD_ERR_EXTENSION  => 'Upload interrompido por extensão do PHP.',
+    ];
+    $msg = $map[$pdfErr] ?? 'Erro desconhecido no upload.';
+    throw new Exception('Falha no upload do PDF. Código: ' . (int)$pdfErr . ' - ' . $msg);
   }
   $pdfTmp  = $_FILES['pdf']['tmp_name'];
   $pdfType = @mime_content_type($pdfTmp) ?: '';
@@ -65,8 +77,19 @@ try {
   }
 
   // ===== CAPA =====
-  if (($_FILES['capa']['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
-    throw new Exception('Falha no upload da capa.');
+  $capaErr = $_FILES['capa']['error'] ?? UPLOAD_ERR_NO_FILE;
+  if ($capaErr !== UPLOAD_ERR_OK) {
+    $map = [
+      UPLOAD_ERR_INI_SIZE   => 'O arquivo excede upload_max_filesize no servidor.',
+      UPLOAD_ERR_FORM_SIZE  => 'O arquivo excede o MAX_FILE_SIZE especificado no formulário.',
+      UPLOAD_ERR_PARTIAL    => 'O upload foi feito parcialmente.',
+      UPLOAD_ERR_NO_FILE    => 'Nenhum arquivo foi enviado.',
+      UPLOAD_ERR_NO_TMP_DIR => 'Pasta temporária ausente no servidor.',
+      UPLOAD_ERR_CANT_WRITE => 'Falha ao gravar o arquivo em disco.',
+      UPLOAD_ERR_EXTENSION  => 'Upload interrompido por extensão do PHP.',
+    ];
+    $msg = $map[$capaErr] ?? 'Erro desconhecido no upload.';
+    throw new Exception('Falha no upload da capa. Código: ' . (int)$capaErr . ' - ' . $msg);
   }
   $capaTmp  = $_FILES['capa']['tmp_name'];
   $capaType = @mime_content_type($capaTmp) ?: '';
