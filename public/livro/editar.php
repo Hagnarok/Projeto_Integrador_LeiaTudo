@@ -14,6 +14,7 @@ $stmt = $pdo->prepare("
   SELECT id, titulo, autor, genero, publicado_por, descricao, pdf_path, capa_path, criado_por_id, criado_por_username
   FROM livros WHERE id = :id LIMIT 1
 ");
+$stmt->execute([':id' => $id]);
 $livro = $stmt->fetch(PDO::FETCH_ASSOC);
 if (!$livro) { http_response_code(404); echo "Livro não encontrado."; exit; }
 

@@ -137,7 +137,7 @@ function renderCards(array $itens, int $inicio, int $qtd): string{
                 <i class='bi bi-search'></i>
               </button>";
 
-  $pubHtml = ($publicadoPorRaw !== '') ? "<p class='card-price mb-0'><span class='ms-2 text-secondary'>Por: {$publicadoPor}</span></p>" : "";
+  $pubHtml = ($publicadoPorRaw !== '') ? "<p class='card-publisher'>Por: {$publicadoPor}</p>" : "";
 
   $html .= "
       <div class='col' style='--i:{$i}'>
@@ -153,9 +153,9 @@ function renderCards(array $itens, int $inicio, int $qtd): string{
           </a>
 
             <div class='card-body'>
-            <h6 class='card-title mb-1'>
-              <a href='{$href}' class='link-underline link-underline-opacity-0'>{$titulo}</a>
-            </h6>
+              <h6 class='card-title mb-1'>
+                <a href='{$href}' class='link-underline link-underline-opacity-0' title='{$titulo}'>{$titulo}</a>
+              </h6>
             {$pubHtml}
           </div>
         </div>
@@ -250,7 +250,22 @@ function renderCards(array $itens, int $inicio, int $qtd): string{
     }
     .card:hover .badge-top{ opacity:1; }
 
-    .card-body{ padding:.8rem .9rem; }
+    /* espaço extra para o label 'Por:' no canto inferior esquerdo */
+    .card-body{ position:relative; padding:.95rem .9rem 2.6rem .9rem; }
+    /* garantir espaçamento entre título e publisher */
+    .card-title.mb-1 { margin-bottom: .5rem; }
+    .card-publisher{
+      position:absolute;
+      left:.9rem;
+      bottom:.5rem;
+      margin:0;
+      font-size:0.78rem;
+      color:#6c757d;
+      line-height:1.1;
+      pointer-events:none;
+    }
+    /* limitar título a 2 linhas e mostrar o full title no hover (via atributo title) */
+    .card-title a{ display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; text-overflow:ellipsis; }
     .card-title{ font-weight:700; line-height:1.25; }
     .card-price{ font-weight:800; letter-spacing:.2px; color:#111; }
 
@@ -442,9 +457,9 @@ window.userFavIds = <?= $userFavJson ?: '[]' ?>;
 
             <div class="card-body">
               <h6 class="card-title mb-1">
-                <a href="${href}" class="link-underline link-underline-opacity-0">${safeTitle}</a>
+                <a href="${href}" class="link-underline link-underline-opacity-0" title="${safeTitle}">${safeTitle}</a>
               </h6>
-              <p class="card-price mb-0"><span class="ms-2 text-secondary">Por: ${publishedSafe(publicadoPor)}</span></p>
+              <p class="card-publisher">Por: ${publishedSafe(publicadoPor)}</p>
             </div>
           </div>
         </div>`;

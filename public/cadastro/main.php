@@ -1,7 +1,17 @@
 <?php
 // public/cadastro/main.php
-// (se tiver controle de sessão, inicie aqui)
-// session_start();
+// Inicia sessão para poder preencher automaticamente o campo "publicado_por"
+if (session_status() === PHP_SESSION_NONE) {
+  session_start();
+}
+$sessUser = $_SESSION['user'] ?? null;
+$uname = $sessUser['username'] ?? ($sessUser['login'] ?? ($sessUser['email'] ?? ''));
+if (is_array($uname)) $uname = '';
+
+// If previous submission failed, restore old inputs from session
+$old = $_SESSION['old_input'] ?? null;
+// consume the old input so it doesn't persist across reloads
+if (isset($_SESSION['old_input'])) unset($_SESSION['old_input']);
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -32,43 +42,44 @@
             <!-- Título -->
             <div class="mb-3">
               <label for="titulo" class="form-label">Título do livro</label>
-              <input type="text" class="form-control" id="titulo" name="titulo" required maxlength="200" placeholder="Ex.: Dom Casmurro">
+              <input type="text" class="form-control" id="titulo" name="titulo" required maxlength="200" placeholder="Ex.: Dom Casmurro" value="<?= htmlspecialchars($old['titulo'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
             </div>
 
             <!-- Autor -->
             <div class="mb-3">
               <label for="autor" class="form-label">Autor</label>
-              <input type="text" class="form-control" id="autor" name="autor" required maxlength="150" placeholder="Ex.: Machado de Assis">
+              <input type="text" class="form-control" id="autor" name="autor" required maxlength="150" placeholder="Ex.: Machado de Assis" value="<?= htmlspecialchars($old['autor'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
             </div>
 
             <!-- Gênero -->
             <div class="mb-3">
               <label for="genero" class="form-label">Gênero</label>
               <select class="form-select" id="genero" name="genero" required>
-                <option value="" selected disabled>Selecione…</option>
-                <option>Romance</option>
-                <option>Ficção Científica</option>
-                <option>Fantasia</option>
-                <option>Suspense/Thriller</option>
-                <option>Mistério</option>
-                <option>Didático</option>
-                <option>Biografia</option>
-                <option>Poesia</option>
-                <option>Infantil</option>
-                <option>Terror</option>
+                <option value="" <?= (empty($old['genero']) ? 'selected' : '') ?> disabled>Selecione…</option>
+                <?php
+                  $generos = [
+                    'Romance','Ficção Científica','Fantasia','Suspense/Thriller','Mistério',
+                    'Didático','Biografia','Poesia','Infantil','Terror'
+                  ];
+                  foreach ($generos as $g) {
+                    $sel = (isset($old['genero']) && $old['genero'] === $g) ? 'selected' : '';
+                    echo '<option ' . $sel . '>' . htmlspecialchars($g, ENT_QUOTES, 'UTF-8') . '</option>';
+                  }
+                ?>
               </select>
-            </div>
-
-            <!-- Preço -->
-            <div class="mb-3">
-              <label for="publicado_por" class="form-label">Publicado por</label>
-              <input type="text" class="form-control" id="publicado_por" name="publicado_por" required placeholder="Nome de quem publicou">
             </div>
 
             <!-- Descrição -->
             <div class="mb-3">
               <label for="descricao" class="form-label">Descrição (opcional)</label>
-              <textarea class="form-control" id="descricao" name="descricao" rows="4" maxlength="2000" placeholder="Resumo curto do livro…"></textarea>
+              <textarea class="form-control" id="descricao" name="descricao" rows="4" maxlength="2000" placeholder="Resumo curto do livro…"><?= htmlspecialchars($old['descricao'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
+            </div>
+
+            <!-- Publicado por (preenchido automaticamente, editável) -->
+            <div class="mb-3">
+              <label for="publicado_por" class="form-label">Publicado por</label>
+              <input type="text" class="form-control" id="publicado_por" name="publicado_por" required maxlength="255" placeholder="Seu nome ou pseudônimo" value="<?= htmlspecialchars($old['publicado_por'] ?? $uname, ENT_QUOTES, 'UTF-8') ?>">
+              <div class="form-text">Nome que aparecerá como autor/quem publicou este e-book (pode ser seu username).</div>
             </div>
 
             <!-- PDF -->

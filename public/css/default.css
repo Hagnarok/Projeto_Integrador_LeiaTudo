@@ -113,6 +113,21 @@
     font-weight: 500;
 }
 
+/* Ajustes globais para evitar que o label 'Por:' fique colado ao título
+   aplicados para consistência entre páginas que usam os cards */
+.card-body{ position:relative; padding:.95rem .9rem 2.6rem .9rem; }
+.card-title.mb-1 { margin-bottom: .5rem; }
+.card-publisher{
+    position:absolute;
+    left:.9rem;
+    bottom:.5rem;
+    margin:0;
+    font-size:0.78rem;
+    color:#6c757d;
+    line-height:1.1;
+    pointer-events:none;
+}
+
 .card-price {
     font-size: 1rem;
     font-weight: bold;

@@ -143,5 +143,6 @@ try {
 
 } catch (Throwable $e) {
   http_response_code(400);
-  echo "<h2>Erro ao editar</h2><p>" . htmlspecialchars($e->getMessage()) . "</p>";
+  require_once __DIR__ . '/../templates/error_page.php';
+  render_error_page('Erro ao editar', $e->getMessage(), null);
 }

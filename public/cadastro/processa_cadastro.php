@@ -23,6 +23,11 @@ try {
   $publicadoPor = trim($_POST['publicado_por'] ?? '');
   $descricao = trim($_POST['descricao'] ?? '');
 
+  // Se o campo publicado_por não foi enviado, tenta usar o username da sessão
+  if ($publicadoPor === '' && is_string($uname) && $uname !== '') {
+    $publicadoPor = $uname;
+  }
+
   if ($titulo === '' || $autor === '' || $genero === '' || $publicadoPor === '' ||
       !isset($_FILES['pdf']) || !isset($_FILES['capa'])) {
     throw new Exception('Campos obrigatórios ausentes.');
@@ -45,20 +50,20 @@ try {
   $uniq     = time() . '_' . mt_rand(1000, 9999);
 
   // ===== PDF =====
-  $pdfErr = $_FILES['pdf']['error'] ?? UPLOAD_ERR_NO_FILE;
-  if ($pdfErr !== UPLOAD_ERR_OK) {
-    // Mapeia códigos de erro para mensagens mais amigáveis
-    $map = [
-      UPLOAD_ERR_INI_SIZE   => 'O arquivo excede upload_max_filesize no servidor.',
-      UPLOAD_ERR_FORM_SIZE  => 'O arquivo excede o MAX_FILE_SIZE especificado no formulário.',
-      UPLOAD_ERR_PARTIAL    => 'O upload foi feito parcialmente.',
-      UPLOAD_ERR_NO_FILE    => 'Nenhum arquivo foi enviado.',
-      UPLOAD_ERR_NO_TMP_DIR => 'Pasta temporária ausente no servidor.',
-      UPLOAD_ERR_CANT_WRITE => 'Falha ao gravar o arquivo em disco.',
-      UPLOAD_ERR_EXTENSION  => 'Upload interrompido por extensão do PHP.',
-    ];
-    $msg = $map[$pdfErr] ?? 'Erro desconhecido no upload.';
-    throw new Exception('Falha no upload do PDF. Código: ' . (int)$pdfErr . ' - ' . $msg);
+  $pdfError = $_FILES['pdf']['error'] ?? UPLOAD_ERR_NO_FILE;
+  $uploadErrorMap = [
+    UPLOAD_ERR_OK => 'Sem erro.',
+    UPLOAD_ERR_INI_SIZE => 'O arquivo excede upload_max_filesize no servidor.',
+    UPLOAD_ERR_FORM_SIZE => 'O arquivo excede o limite definido no formulário.',
+    UPLOAD_ERR_PARTIAL => 'O upload foi feito parcialmente.',
+    UPLOAD_ERR_NO_FILE => 'Nenhum arquivo foi enviado.',
+    UPLOAD_ERR_NO_TMP_DIR => 'Pasta temporária ausente no servidor.',
+    UPLOAD_ERR_CANT_WRITE => 'Falha ao gravar o arquivo em disco.',
+    UPLOAD_ERR_EXTENSION => 'Upload interrompido por extensão PHP.'
+  ];
+  if ($pdfError !== UPLOAD_ERR_OK) {
+    $msg = $uploadErrorMap[$pdfError] ?? 'Erro desconhecido no upload.';
+    throw new Exception("Falha no upload do PDF. Código: {$pdfError} - {$msg}");
   }
   $pdfTmp  = $_FILES['pdf']['tmp_name'];
   $pdfType = @mime_content_type($pdfTmp) ?: '';
@@ -77,19 +82,10 @@ try {
   }
 
   // ===== CAPA =====
-  $capaErr = $_FILES['capa']['error'] ?? UPLOAD_ERR_NO_FILE;
-  if ($capaErr !== UPLOAD_ERR_OK) {
-    $map = [
-      UPLOAD_ERR_INI_SIZE   => 'O arquivo excede upload_max_filesize no servidor.',
-      UPLOAD_ERR_FORM_SIZE  => 'O arquivo excede o MAX_FILE_SIZE especificado no formulário.',
-      UPLOAD_ERR_PARTIAL    => 'O upload foi feito parcialmente.',
-      UPLOAD_ERR_NO_FILE    => 'Nenhum arquivo foi enviado.',
-      UPLOAD_ERR_NO_TMP_DIR => 'Pasta temporária ausente no servidor.',
-      UPLOAD_ERR_CANT_WRITE => 'Falha ao gravar o arquivo em disco.',
-      UPLOAD_ERR_EXTENSION  => 'Upload interrompido por extensão do PHP.',
-    ];
-    $msg = $map[$capaErr] ?? 'Erro desconhecido no upload.';
-    throw new Exception('Falha no upload da capa. Código: ' . (int)$capaErr . ' - ' . $msg);
+  $capaError = $_FILES['capa']['error'] ?? UPLOAD_ERR_NO_FILE;
+  if ($capaError !== UPLOAD_ERR_OK) {
+    $msg = $uploadErrorMap[$capaError] ?? 'Erro desconhecido no upload.';
+    throw new Exception("Falha no upload da capa. Código: {$capaError} - {$msg}");
   }
   $capaTmp  = $_FILES['capa']['tmp_name'];
   $capaType = @mime_content_type($capaTmp) ?: '';
@@ -140,5 +136,15 @@ try {
 
 } catch (Throwable $e) {
   http_response_code(400);
-  echo "<h2>Erro no cadastro</h2><p>" . htmlspecialchars($e->getMessage()) . "</p>";
+  // Save old POST values in session so the form can be repopulated when user returns
+  $_SESSION['old_input'] = [
+    'titulo' => $_POST['titulo'] ?? '',
+    'autor' => $_POST['autor'] ?? '',
+    'genero' => $_POST['genero'] ?? '',
+    'publicado_por' => $_POST['publicado_por'] ?? '',
+    'descricao' => $_POST['descricao'] ?? '',
+  ];
+  // render friendly error page (Voltar irá recarregar o formulário que agora usará $_SESSION['old_input'])
+  require_once __DIR__ . '/../templates/error_page.php';
+  render_error_page('Erro no cadastro', $e->getMessage(), '/public/cadastro/main.php');
 }
