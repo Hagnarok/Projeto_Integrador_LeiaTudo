@@ -5,10 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 $user = $_SESSION['user'] ?? null;
 ?>
 
-<body class="home-nav">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="stylesheet" href="../css/default.css?v=2">
+<!-- navbar fragment: não deve conter <body> ou links de <head> quando incluída em páginas que já têm <head> -->
 
     <nav class="navbar navbar-expand-lg navbar-custom shadow-sm">
         <div class="container-fluid">
@@ -30,10 +27,14 @@ $user = $_SESSION['user'] ?? null;
 
             <div class="collapse navbar-collapse justify-content-end" id="navbarMain">
                 <ul class="navbar-nav">
+                    <button id="tema" class="btn btn-theme-toggle" title="Tema Escuro" aria-pressed="false">
+                        <i class="bi bi-moon" aria-hidden="true"></i>
+                    </button>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle fs-5 px-3" href="#" id="menuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-list"></i> Menu
+                            <i class="bi bi-list"></i> 
                         </a>
+                        
                         <ul class="dropdown-menu dropdown-menu-end animated-dropdown" aria-labelledby="menuLink">
                             <li><a class="dropdown-text px-3">Funções:</a></li>
                             <li>
@@ -47,7 +48,7 @@ $user = $_SESSION['user'] ?? null;
                                 </a>
                             </li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-text px-3">Gêneros:</a></li>
+                            <li><a class="scrool-bar dropdown-text px-3">Gêneros:</a></li>
                             <li><a class="dropdown-item" href="#sec-terror">Terror</a></li>
                             <li><a class="dropdown-item" href="#sec-misterio">Mistério</a></li>
                             <li><a class="dropdown-item" href="#sec-infantil">Infantil</a></li>
@@ -73,7 +74,50 @@ $user = $_SESSION['user'] ?? null;
         </div>
     </nav>
 
+    <!-- Barra de pesquisa abaixo da navbar (canto direito) -->
+    <div class="nav-search container-fluid px-3 py-2">
+        <div class="d-flex justify-content-end">
+            <form class="d-flex position-relative" role="search" action="/home/main.php" method="get" autocomplete="off">
+                <input id="siteSearch" name="q" class="form-control form-control-sm me-2" type="search" placeholder="Pesquisar livros..." aria-label="Pesquisar livros" value="<?= htmlspecialchars($_GET['q'] ?? '', ENT_QUOTES) ?>">
+                <button class="btn btn-sm btn-outline-primary" type="submit" title="Pesquisar"><i class="bi bi-search"></i></button>
+
+                <!-- sugestões dinâmicas (typeahead) -->
+                <div id="searchSuggestions" class="search-suggestions d-none" role="listbox" aria-label="Sugestões de livros"></div>
+            </form>
+        </div>
+    </div>
+
 <script>
+// Tema Escuro 
+(() => {
+  const temaBtn = document.getElementById('tema');
+  if (!temaBtn) return;
+
+  
+  const moonIcon = temaBtn.querySelector('.bi') || temaBtn.querySelector('m') || temaBtn.querySelector('i');
+
+  
+  let moonOn = false;
+  try { moonOn = localStorage.getItem('tema_dark') === '1'; } catch (e) { /* ignore */ }
+
+  const applyTheme = (on) => {
+    moonOn = !!on;
+    document.body.classList.toggle('dark-mode', moonOn);
+    if (moonIcon) {
+      if (moonOn) {
+        moonIcon.classList.remove('bi-moon');
+        moonIcon.classList.add('bi-sun');
+      } else {
+        moonIcon.classList.remove('bi-sun');
+        moonIcon.classList.add('bi-moon');
+      }
+    }
+    try { localStorage.setItem('tema_dark', moonOn ? '1' : '0'); } catch(e){}
+  };
+
+  applyTheme(moonOn);
+  temaBtn.addEventListener('click', () => applyTheme(!moonOn));
+})();
 document.addEventListener("DOMContentLoaded", function () {
     const genreLinks = document.querySelectorAll('.dropdown-menu a[href^="#sec-"]');
 
@@ -126,6 +170,60 @@ document.addEventListener("DOMContentLoaded", function () {
         setTimeout(() => aviso.remove(), 3000);
     }
 });
+
+// Typeahead: fetch sugestões enquanto digita
+(function(){
+    const input = document.getElementById('siteSearch');
+    const box = document.getElementById('searchSuggestions');
+    if (!input || !box) return;
+
+    let timer = 0;
+    const debounceDelay = 260;
+
+    const escapeHtml = s=> String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+    function hideBox(){ box.classList.add('d-none'); box.innerHTML=''; }
+    function showBox(){ box.classList.remove('d-none'); }
+
+    input.addEventListener('input', ()=>{
+        clearTimeout(timer);
+        const q = input.value.trim();
+        if (!q) { hideBox(); return; }
+        timer = setTimeout(()=> doSearch(q), debounceDelay);
+    });
+
+    input.addEventListener('keydown', (ev)=>{
+        if (ev.key === 'Escape') { hideBox(); input.blur(); }
+    });
+
+    document.addEventListener('click', (ev)=>{
+        if (!input.contains(ev.target) && !box.contains(ev.target)) hideBox();
+    });
+
+    function doSearch(q){
+        fetch('/home/search.php?q='+encodeURIComponent(q), { credentials:'same-origin' })
+            .then(r=>r.json())
+            .then(json=>{
+                const items = (json && Array.isArray(json.results)) ? json.results : [];
+                if (!items.length) {
+                    box.innerHTML = '<div class="suggestion-empty p-2 text-muted">Nenhum resultado</div>';
+                    showBox();
+                    return;
+                }
+
+                box.innerHTML = items.map(it=>{
+                    const img = it.img ? '<img src="'+escapeHtml(it.img)+'" alt="" class="me-2 suggestion-img">' : '<div class="me-2 suggestion-img placeholder"></div>';
+                    const title = '<div class="fw-semibold">'+escapeHtml(it.titulo)+'</div>';
+                    const subtitle = (it.autor || it.publicado_por) ? '<div class="small text-muted">'+escapeHtml(it.autor || it.publicado_por)+'</div>' : '';
+                    return '<a href="/public/livro/ver.php?id='+encodeURIComponent(it.id)+'" class="suggestion-item d-flex align-items-center p-2 text-decoration-none text-reset" role="option">'+img+'<div>'+title+subtitle+'</div></a>';
+                }).join('');
+                showBox();
+            }).catch(()=>{
+                box.innerHTML = '<div class="suggestion-empty p-2 text-muted">Erro na busca</div>';
+                showBox();
+            });
+    }
+})();
 </script>
 
 <style>
@@ -187,6 +285,3 @@ document.addEventListener("DOMContentLoaded", function () {
     to { opacity: 0; }
 }
 </style>
-
-
-</body>

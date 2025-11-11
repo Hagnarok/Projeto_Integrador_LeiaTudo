@@ -10,6 +10,31 @@ $user = $_SESSION['user'] ?? null;
 require_once __DIR__ . '/../lib/db.php';
 $pdo = db();
 
+// Pesquisa (barra de pesquisa) — se 'q' presente, filtra títulos/autores
+$searchQuery = '';
+if (isset($_GET['q'])) {
+  $searchQuery = trim((string)$_GET['q']);
+  if ($searchQuery !== '') {
+    try {
+      $st = $pdo->prepare("SELECT id, titulo, preco, publicado_por, criado_por_username, capa_path AS img, descricao
+        FROM livros
+        WHERE titulo LIKE :q OR autor LIKE :q
+        ORDER BY criado_em DESC
+        LIMIT 100");
+      $like = '%' . str_replace('%', '\\%', $searchQuery) . '%';
+      $st->bindValue(':q', $like, PDO::PARAM_STR);
+      $st->execute();
+      $results = $st->fetchAll(PDO::FETCH_ASSOC);
+    } catch (Throwable $e) {
+      $results = [];
+    }
+    // Mostrar apenas a seção 'destaque' com os resultados da pesquisa
+    $catalogo = [ 'destaque' => $results ];
+    // limpar variáveis previamente preenchidas para evitar carregamento padrão
+    $destaque = $results;
+  }
+}
+
 /* =========================
    Catálogo via SQLite
    ========================= */
@@ -78,6 +103,8 @@ function getOffset(string $slug, int $total, int $pageSize): int{
   }
   return $o;
 }
+
+
 
 function renderCards(array $itens, int $inicio, int $qtd): string{
   // usa $userFavIds para pintar o toggle
@@ -322,7 +349,35 @@ if (is_array($flash) && !empty($flash['type']) && array_key_exists('html', $flas
 unset($_SESSION['flash']); // consome o flash (não reaparece no reload)
 ?>
 
-<?php include __DIR__ . '/secoes.php'; ?>
+<?php
+// Se pesquisa ativa, mostramos mensagem de resultados e limpamos as outras seções
+if (!empty($searchQuery)):
+  $found = isset($results) && is_array($results) ? count($results) : 0;
+  $qEsc = htmlspecialchars($searchQuery, ENT_QUOTES, 'UTF-8');
+  ?>
+  <div class="container mt-3">
+    <?php if ($found > 0): ?>
+      <div class="alert alert-info d-flex justify-content-between align-items-center">
+        <div>Resultados para <strong><?= $qEsc ?></strong> — <span class="badge bg-light text-dark"><?= $found ?></span></div>
+        <div>
+          <a href="/home/main.php" class="btn btn-sm btn-outline-secondary">Limpar pesquisa</a>
+        </div>
+      </div>
+    <?php else: ?>
+      <div class="alert alert-warning d-flex justify-content-between align-items-center">
+        <div>Nenhum resultado encontrado para <strong><?= $qEsc ?></strong>.</div>
+        <div>
+          <a href="/home/main.php" class="btn btn-sm btn-outline-secondary">Limpar pesquisa</a>
+        </div>
+      </div>
+    <?php endif; ?>
+  </div>
+<?php
+else:
+  // sem pesquisa — renderiza as seções normais
+  include __DIR__ . '/secoes.php';
+endif;
+?>
 
 <!-- Modal de Detalhes -->
 <div class="modal fade" id="detalheModal" tabindex="-1" aria-labelledby="detalheModalLabel" aria-hidden="true">

@@ -35,6 +35,10 @@
     padding: 10px 0;
     border: none;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    /* limitar altura em telas menores e ativar rolagem touch-friendly */
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .dropdown-item {
@@ -174,7 +178,8 @@
 
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
-    filter: invert(1);
+    /* remover inversão global — causava tons estranhos em alguns temas */
+    filter: none !important;
     width: 20px;
     height: 20px;
 }
@@ -220,4 +225,180 @@ footer {
     padding: 8px 12px;
 }
 footer p { margin: 0; font-family: 'Segoe UI', sans-serif; }
+
+/* Dark mode (basic) - toggled by adding `.dark-mode` to <body> */
+body.dark-mode {
+    background: #0b1220 !important;
+    color: #dbeafe !important;
+}
+body.dark-mode header { background: #071028; box-shadow: none; }
+body.dark-mode .meta-strip { background: #071028; box-shadow: 0 6px 20px rgba(0,0,0,.6); color: #cde7ff; }
+body.dark-mode .cover { box-shadow: 0 6px 20px rgba(0,0,0,.6); }
+body.dark-mode .book-sub, body.dark-mode .book-title { color: #dbeafe; }
+body.dark-mode .viewer-controls, body.dark-mode .reader-minibar { background: rgba(255,255,255,0.03); }
+body.dark-mode .btn, body.dark-mode .btn-primary { background: #0b6fb0 !important; border-color: #0b6fb0 !important; }
+body.dark-mode .card, body.dark-mode canvas { background: #071028; color: #dbeafe; }
+body.dark-mode a { color: #9fd1ff; }
+/* ensure icons invert nicely when needed */
+body.dark-mode .bi { filter: drop-shadow(0 1px 0 rgba(0,0,0,.4)); }
+
+/* Ajuste específico para o canvas do PDF: inverter cores no modo escuro
+   Isso faz o fundo do PDF ficar escuro e o texto claro. Ajuste se necessário. */
+body.dark-mode canvas#pdf-canvas {
+    filter: invert(1) hue-rotate(180deg) contrast(0.95) !important;
+    background: #071028 !important;
+}
+
+/* Tornar o ícone do sol visível/amarelo no modo noturno e forçar as setas brancas */
+body.dark-mode .bi-sun {
+    color: #ffd54a !important; /* amarelo quente */
+    filter: none !important;   /* evitar efeitos de filtro que possam alterar a cor */
+    text-shadow: 0 1px 0 rgba(0,0,0,0.45);
+}
+
+/* Setas de navegação (viewer + minibar) em branco no modo noturno */
+body.dark-mode .viewer-controls .bi.bi-arrow-left,
+body.dark-mode .viewer-controls .bi.bi-arrow-right,
+body.dark-mode #readerMiniBar .bi.bi-arrow-left,
+body.dark-mode #readerMiniBar .bi.bi-arrow-right,
+body.dark-mode .reader-minibar .bi.bi-arrow-left,
+body.dark-mode .reader-minibar .bi.bi-arrow-right {
+    color: #ffffff !important;
+    filter: none !important;
+}
+
+/* Também garanta que ícones dentro de botões principais fiquem visíveis */
+body.dark-mode .viewer-controls .btn .bi,
+body.dark-mode #readerMiniBar .btn .bi {
+    color: #ffffff !important;
+}
+
+/* Botão de tema: estilo personalizado (não ficar esticado) */
+
+.btn-theme-toggle{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:36px;
+    height:36px;
+    padding:0;
+    border-radius:8px;
+    background: rgba(82, 76, 76, 0.61); /* não amarelo por padrão */
+    color: inherit;
+    border: none;
+    box-shadow: none;
+}
+.btn-theme-toggle .bi{font-size:1.05rem; line-height:1}
+.btn-theme-toggle:focus{outline:none;box-shadow:0 0 0 3px rgba(255, 255, 255, 0.06)}
+
+/* Ícone da lua (estado padrão): manter preto/escuro */
+.btn-theme-toggle .bi-moon{ color: #0b1220 !important; filter: none !important }
+
+/* Quando estiver em modo escuro: botão amarelo e ícone do sol branco */
+body.dark-mode .btn-theme-toggle{
+    background:#ffd54a !important;
+    color:#ffffff !important;
+    border:1px solid rgba(0,0,0,0.06);
+    box-shadow:0 2px 6px rgba(0,0,0,0.08);
+}
+body.dark-mode .btn-theme-toggle .bi-sun{ color:#ffffff !important; filter:none !important }
+
+/* Ajustes para botões de navegação no modo noturno: manter fundo discreto e ícone branco */
+body.dark-mode .viewer-controls .btn,
+body.dark-mode .reader-minibar .btn,
+body.dark-mode #readerMiniBar .btn{
+    background: rgba(255,255,255,0.04) !important;
+    border-color: rgba(255,255,255,0.06) !important;
+    color: #ffffff !important;
+}
+body.dark-mode .viewer-controls .btn:hover,
+body.dark-mode .reader-minibar .btn:hover,
+body.dark-mode #readerMiniBar .btn:hover{
+    background: rgba(255,255,255,0.06) !important;
+}
+
+/* Barra de pesquisa abaixo da navbar */
+.nav-search{background:transparent}
+.nav-search .form-control{max-width:320px;border-radius:20px}
+.nav-search .btn-outline-primary{border-radius:20px; border:1px solid #0573b3}
+
+/* buscar: ícone e borda no tema claro */
+.nav-search .btn-outline-primary .bi {
+    color: #0b1220 !important; /* ícone preto no claro */
+    filter: none !important;
+}
+
+/* Botões de navegação das seções (setas) - estilo claro */
+.nav-btn{
+    color: #0b1220; /* ícone preto no modo claro */
+    background: rgba(255,255,255,0.95);
+    border: 1px solid #0573b3; /* borda azul no claro */
+}
+.nav-btn:hover{ background: #fff; }
+.nav-btn:active{ transform: translateY(1px); }
+
+/* No modo escuro: ícones brancos e borda azul-claro */
+body.dark-mode .nav-btn{
+    color: #ffffff !important;
+    background: rgba(255,255,255,0.04) !important;
+    border-color: #9fd1ff !important; /* azul claro */
+}
+body.dark-mode .nav-btn:hover{ background: rgba(255,255,255,0.06) !important; }
+
+/* No modo escuro: ajustar o botão de busca (borda azul-claro, ícone branco) */
+body.dark-mode .nav-search .btn-outline-primary{
+    border-color: #9fd1ff !important;
+    background: rgba(159,209,255,0.04) !important;
+}
+body.dark-mode .nav-search .btn-outline-primary .bi {
+    color: #ffffff !important;
+}
+
+/* pequenas transições para ícones */
+.btn-theme-toggle .bi,
+.viewer-controls .bi,
+.reader-minibar .bi{transition:color .18s ease, filter .18s ease}
+
+/* Sugestões de pesquisa (typeahead) */
+.search-suggestions{
+    position:absolute; right:0; top:calc(100% + .4rem);
+    width:360px; max-width:calc(100vw - 2rem);
+    background:#ffffff; border:1px solid rgba(0,0,0,0.08);
+    border-radius:8px; box-shadow:0 8px 24px rgba(11,16,32,0.08);
+    z-index:1500; overflow:hidden; max-height:52vh; overflow-y:auto;
+}
+.search-suggestions .suggestion-item{ border-bottom:1px solid rgba(0,0,0,0.04); }
+.search-suggestions .suggestion-item:last-child{ border-bottom:0 }
+.search-suggestions .suggestion-img{ width:40px; height:56px; object-fit:cover; border-radius:6px }
+.search-suggestions .suggestion-img.placeholder{ background:linear-gradient(90deg,#eee,#f7f7f7); width:40px; height:56px; border-radius:6px }
+.search-suggestions .suggestion-empty{ text-align:center }
+
+/* modo escuro para sugestões */
+body.dark-mode .search-suggestions{ background:#071028; border-color:rgba(255,255,255,0.06); color:#dbeafe }
+body.dark-mode .search-suggestions .suggestion-item{ border-bottom:1px solid rgba(255,255,255,0.03) }
+body.dark-mode .search-suggestions .suggestion-img.placeholder{ background:linear-gradient(90deg,#0b1220,#071a2a) }
+
+/* Carousel controls: ícones brancos em modo noturno */
+body.dark-mode .carousel-control-prev,
+body.dark-mode .carousel-control-next{
+    background-color: rgba(255,255,255,0.06) !important;
+}
+
+/* Substitui o background-image para garantir setas brancas nítidas */
+body.dark-mode .carousel-control-prev-icon{
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'><path d='M11.354 1.646a.5.5 0 0 1 0 .708L6.707 7l4.647 4.646a.5.5 0 0 1-.708.708l-5-5a.5.5 0 0 1 0-.708l5-5a.5.5 0 0 1 .708 0z'/></svg>") !important;
+    filter: none !important;
+}
+body.dark-mode .carousel-control-next-icon{
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'><path d='M4.646 1.646a.5.5 0 0 0 0 .708L9.293 7 4.646 11.646a.5.5 0 1 0 .708.708l5-5a.5.5 0 0 0 0-.708l-5-5a.5.5 0 0 0-.708 0z'/></svg>") !important;
+    filter: none !important;
+}
+
+/* Light-mode carousel icons (preto) */
+.carousel-control-prev-icon{
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%230b1220'><path d='M11.354 1.646a.5.5 0 0 1 0 .708L6.707 7l4.647 4.646a.5.5 0 0 1-.708.708l-5-5a.5.5 0 0 1 0-.708l5-5a.5.5 0 0 1 .708 0z'/></svg>") !important;
+}
+.carousel-control-next-icon{
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%230b1220'><path d='M4.646 1.646a.5.5 0 0 0 0 .708L9.293 7 4.646 11.646a.5.5 0 1 0 .708.708l5-5a.5.5 0 0 0 0-.708l-5-5a.5.5 0 0 0-.708 0z'/></svg>") !important;
+}
 

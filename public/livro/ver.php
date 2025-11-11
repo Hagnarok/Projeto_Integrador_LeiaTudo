@@ -52,6 +52,7 @@ $tamEsc = humanSize($pdfSize);
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<link rel="stylesheet" href="../css/default.css?v=2">
 <style>
 :root{
   --brand:#0573b3;--brand-light:#0a8fd9;--text-muted:#6b7b8c;
@@ -165,6 +166,9 @@ header{
     <button id="eyeComfort" class="btn btn-sm btn-warning" title="Conforto Ocular">
       <i class="bi bi-eye"></i>
     </button>
+    <button id="tema" class="btn btn-theme-toggle" title="Tema Escuro" aria-pressed="false">
+      <i class="bi bi-moon" aria-hidden="true"></i>
+    </button>
 
     <?php if($canDelete): ?>
     <a href="/public/livro/editar.php?id=<?= (int)$id ?>" class="btn btn-primary btn-sm"><i class="bi bi-pencil-square"></i> Editar</a>
@@ -216,6 +220,10 @@ header{
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.10.111/pdf.min.js"></script>
 <script>
 // PDF setup
+
+if (typeof pdfjsLib !== 'undefined' && pdfjsLib.GlobalWorkerOptions) {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.10.111/pdf.worker.min.js';
+}
 const url = "<?= $pdfWeb ?>";
 const canvas = document.getElementById("pdf-canvas");
 const ctx = canvas.getContext("2d");
@@ -248,24 +256,70 @@ eyeBtn.addEventListener("click", () => {
     }
 });
 
+// Tema Escuro 
+(() => {
+  const temaBtn = document.getElementById('tema');
+  if (!temaBtn) return;
+
+  
+  const moonIcon = temaBtn.querySelector('.bi') || temaBtn.querySelector('m') || temaBtn.querySelector('i');
+
+  
+  let moonOn = false;
+  try { moonOn = localStorage.getItem('tema_dark') === '1'; } catch (e) { /* ignore */ }
+
+  const applyTheme = (on) => {
+    moonOn = !!on;
+    document.body.classList.toggle('dark-mode', moonOn);
+    if (moonIcon) {
+      if (moonOn) {
+        moonIcon.classList.remove('bi-moon');
+        moonIcon.classList.add('bi-sun');
+      } else {
+        moonIcon.classList.remove('bi-sun');
+        moonIcon.classList.add('bi-moon');
+      }
+    }
+    try { localStorage.setItem('tema_dark', moonOn ? '1' : '0'); } catch(e){}
+  };
+
+  applyTheme(moonOn);
+  temaBtn.addEventListener('click', () => applyTheme(!moonOn));
+})();
+
 let pdfDoc = null, pageNum=1, pageRendering=false, pageNumPending=null;
 let scale = 1.5;
 
 function renderPage(num){
   pageRendering=true;
   pdfDoc.getPage(num).then(page=>{
-    const viewport = page.getViewport({scale});
-    canvas.height=viewport.height;
-    canvas.width=viewport.width;
-    const renderCtx={canvasContext:ctx,viewport};
-    page.render(renderCtx).promise.then(()=>{
+    try{
+      const viewport = page.getViewport({scale});
+      canvas.height = viewport.height;
+      canvas.width  = viewport.width;
+      const renderCtx = { canvasContext: ctx, viewport };
+      const renderTask = page.render(renderCtx);
+      renderTask.promise.then(()=>{
+        pageRendering=false;
+        if (pageNumPending !== null) { renderPage(pageNumPending); pageNumPending = null; }
+      }).catch(err=>{
+        console.error('PDF render failed:', err);
+        pageRendering=false;
+        showPdfError('Erro ao renderizar a página (ver console).');
+      });
+
+      pageNumElem.textContent = num;
+      pageNumMini.textContent = num;
+      pageCountMini.textContent = pdfDoc.numPages;
+      localStorage.setItem(saveKey, num);
+    } catch (err) {
+      console.error('Error in renderPage handling:', err);
       pageRendering=false;
-      if(pageNumPending!==null){renderPage(pageNumPending); pageNumPending=null;}
-    });
-    pageNumElem.textContent=num;
-    pageNumMini.textContent=num;
-    pageCountMini.textContent=pdfDoc.numPages;
-    localStorage.setItem(saveKey,num);
+      showPdfError('Erro interno no renderizador do PDF.');
+    }
+  }).catch(err=>{
+    console.error('Failed to get PDF page:', err);
+    showPdfError('Falha ao obter página do PDF.');
   });
 }
 
@@ -281,11 +335,28 @@ pdfjsLib.getDocument(url).promise.then(doc=>{
   const savedPage=parseInt(localStorage.getItem(saveKey));
   if(savedPage>=1 && savedPage<=doc.numPages) pageNum=savedPage;
   renderPage(pageNum);
+}).catch(err=>{
+  console.error('Failed to load PDF document:', err);
+  showPdfError('Falha ao carregar PDF.');
 });
 
+function showPdfError(msg){
+  try{
+    const ctx2 = canvas.getContext('2d');
+    ctx2.clearRect(0,0,canvas.width,canvas.height);
+    canvas.width = Math.max(600, canvas.width || 600);
+    canvas.height = 160;
+    ctx2.fillStyle = '#fff';
+    ctx2.fillRect(0,0,canvas.width,canvas.height);
+    ctx2.fillStyle = '#b00';
+    ctx2.font = '16px sans-serif';
+    ctx2.fillText(msg, 12, 32);
+  } catch(e){ console.error('showPdfError failed', e); }
+}
+
 // Eventos principais
-document.getElementById("prevPage").addEventListener("click",onPrevPage);
-document.getElementById("nextPage").addEventListener("click",onNextPage);
+document.getElementById("prevPage").addEventListener("click", onPrevPage);
+document.getElementById("nextPage").addEventListener("click", onNextPage);
 document.getElementById("fitWidth").addEventListener("click",()=>{scale=2.5; zoomRange.value=250; zoomVal.textContent="250%"; queueRenderPage(pageNum);});
 document.getElementById("fitPage").addEventListener("click",()=>{scale=1; zoomRange.value=100; zoomVal.textContent="100%"; queueRenderPage(pageNum);});
 zoomRange.addEventListener("input",()=>{scale=parseInt(zoomRange.value)/100; zoomVal.textContent=zoomRange.value+"%"; queueRenderPage(pageNum);});
@@ -305,7 +376,21 @@ function toggleReader(force){
 
 exitBtn.addEventListener("click",()=>toggleReader(false));
 enterBtn.addEventListener("click",()=>toggleReader(true));
-document.addEventListener("keydown", e=>{if(e.key.toLowerCase()==='l') toggleReader();});
+// Teclas de atalho: L para leitor; setas para navegação (ignorando quando em inputs)
+document.addEventListener("keydown", function(e){
+  try{
+    const tgt = e.target || {};
+    const tag = (tgt.tagName || '').toLowerCase();
+    const isEditable = tgt.isContentEditable || tag === 'input' || tag === 'textarea' || tag === 'select';
+    if (isEditable) return;
+  } catch(err){}
+
+  if (e.key === 'ArrowLeft') { onPrevPage(); e.preventDefault(); return; }
+  if (e.key === 'ArrowRight') { onNextPage(); e.preventDefault(); return; }
+  if (e.key && e.key.toLowerCase() === 'l') toggleReader();
+  // tecla Escape — browsers modernos usam 'Escape'; alguns antigos podem enviar 'Esc' ou usar keyCode 27
+  if (e.key === 'Escape' || e.key === 'Esc' || e.keyCode === 27) toggleReader(false);
+});
 
 // MiniBar navegação
 document.getElementById("prevPageMini").addEventListener("click",()=>onPrevPage());
